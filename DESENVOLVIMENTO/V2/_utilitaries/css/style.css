@@ -1,0 +1,7 @@
+.bg{
+	background-color: #404040;
+}
+
+button.bg:hover{
+	background-color: #707070;
+}
