@@ -25,6 +25,7 @@ include $_SERVER["DOCUMENT_ROOT"].'/functions/global_functions.php';
         	    echo include_modal("idRetornoLogin","Apontamento de Horas", "Bem-vindo ".$_SESSION['nomeUsuario']. "!", "sucesso");
         	}
     		//verifica permissões do usuário
+			$readyPermissoes = "";
         	if (isset($_SESSION["CAD_PER"]) && $_SESSION["CAD_PER"] == 1) {
     		    $readyPermissoes .= "js_exibeCampos('CAD_PER', '', false);"; //prepara string para inserir no onReady da página para cada permissão
     		}

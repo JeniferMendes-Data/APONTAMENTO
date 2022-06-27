@@ -21,6 +21,7 @@ include_once $_SERVER["DOCUMENT_ROOT"].'/_utilitaries/config.php';
         		echo include_menu("Apontar","Apontar Horas");
 
         		//verifica permissões do usuário
+				$readyPermissoes = "";
         		if (isset($_SESSION["APT"]) && $_SESSION["APT"] == 1) {
         		    $readyPermissoes .= "js_exibeCampos('APT', '', false);";//prepara string para inserir no onReady da página para cada permissão
         		}

@@ -21,6 +21,7 @@ function json_postRecuperaDadosOS() {
 }
 
 function json_postRecuperaDadosParteAtiv() {
+    $idSecao = "";
     $json = $_POST["recuperaDadosParteAtiv"];
 
     //busca no RM o ID da seção baseado no código contido no campo de seção da tela

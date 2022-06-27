@@ -83,6 +83,7 @@ function include_menu($paginaAtual, $titulo){
 
 //Função para retornar a lista de OS's genéricas views -> apontar.php
 function include_itemOSGenerica() {
+    $retorno = "";
     $numOSGenerica = new Config();
     $result = querySelect_dadoOS($numOSGenerica->OSGenerica);
 
@@ -96,7 +97,7 @@ function include_itemOSGenerica() {
 //Função para retornar a lista de causas do Retrabalho views -> apontar.php
 function include_causaRetrabalho() {
     $result = querySelect_causaRetrabalho();
-
+    $retorno = "";
     foreach ($result as $row){
         $retorno .= '<option value="'.$row['CODINTERNO'].'">'.$row['DESCRICAO'].'</option>';
     }

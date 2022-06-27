@@ -8,7 +8,7 @@ include_once ($_SERVER["DOCUMENT_ROOT"].'/_utilitaries/config.php');
 
 //Função para permitir acesso ao sistema validando login/ senha e grupo de permissões
 function querySelect_login($login, $senha) {
-
+    $stringTipo = "";
     $retorno = querySelect_listaParam();
     foreach ($retorno as $nomePermissao) {
         $stringTipo .= "[".$nomePermissao["TIPO"]."],";
