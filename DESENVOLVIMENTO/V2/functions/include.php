@@ -30,9 +30,10 @@ function include_head($titulo){
                 <meta name="viewport" content="width=device-width, initial-scale=1">
                 <link rel="stylesheet" href="http://'.$_SERVER["HTTP_HOST"].'/_utilitaries/css/bootstrap-select.css">
                 <link rel="stylesheet" href="http://'.$_SERVER["HTTP_HOST"].'/_utilitaries/css/bootstrap.min.css">
-                <link rel="stylesheet" href="http://'.$_SERVER["HTTP_HOST"].'/_utilitaries/css/style.css">
+                <link rel="stylesheet" href="http://'.$_SERVER["HTTP_HOST"].'/_utilitaries/css/custom_style.css">
                 <link rel="stylesheet" href="http://'.$_SERVER["HTTP_HOST"].'/_utilitaries/css/jquery-ui.min.css">
-                <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+                <link rel="stylesheet" href="http://'.$_SERVER["HTTP_HOST"].'/_utilitaries/css/fullCalendar-main.min.css">
+                <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
                 <script src="http://'.$_SERVER["HTTP_HOST"].'/_utilitaries/js/jquery-3.6.0.min.js"></script>
                 <script src="http://'.$_SERVER["HTTP_HOST"].'/_utilitaries/js/jquery-ui.min.js"></script>
                 <script src="http://'.$_SERVER["HTTP_HOST"].'/_utilitaries/js/datepicker-pt-BR.js"></script>
@@ -40,7 +41,9 @@ function include_head($titulo){
                 <script src="http://'.$_SERVER["HTTP_HOST"].'/_utilitaries/js/bootstrap-select.min.js"></script>
                 <script src="http://'.$_SERVER["HTTP_HOST"].'/_utilitaries/js/bootbox.min.js"></script>
                 <script src="http://'.$_SERVER["HTTP_HOST"].'/_utilitaries/js/bootbox.locales.min.js"></script>
-                <script src="http://'.$_SERVER["HTTP_HOST"].'/_utilitaries/js/manipula_html.js"></script>';
+                <script src="http://'.$_SERVER["HTTP_HOST"].'/_utilitaries/js/custom_manipula_html.js"></script>
+                <script src="http://'.$_SERVER["HTTP_HOST"].'/_utilitaries/js/fullCalendar-main.min.js"></script>
+                <script src="http://'.$_SERVER["HTTP_HOST"].'/_utilitaries/js/fullCalendar-pt-br.js"></script>';
     return $retorno;
 }
 

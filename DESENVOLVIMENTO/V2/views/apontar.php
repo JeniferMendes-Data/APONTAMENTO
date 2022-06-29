@@ -191,19 +191,6 @@ include_once $_SERVER["DOCUMENT_ROOT"].'/_utilitaries/config.php';
     			$('#selNome').on('change', function (element) {
                   js_recuperaSecaoNomeSup(document.getElementById("inpChapa"), document.getElementById("selNome"), "selecionarNome");
                 });
-
-// 				$('#selSecaoDesc').on('shown.bs.select', function (e, clickedIndex, isSelected, previousValue) {
-    				//js_recuperaSecaoNomeSup(document.getElementById("selSecaoDesc"), "<?php echo $_SESSION["usuarioLogado"];?>", "preencherSecao");
-//     			});
-
-//     			$('#selSecaoDesc').on('change', function (element) {
-//                   js_recuperaSecaoNomeSup(document.getElementById("inpSecao"), document.getElementById("selSecaoDesc"), "selecionarSecao");
-//                   js_recuperaSecaoNomeSup(document.getElementById("inpChapa"), document.getElementById("selNome"), "preencherNome");
-//                 });
-
-//     			$('#selNome').on('change', function (element) {
-//                   js_recuperaSecaoNomeSup(document.getElementById("inpChapa"), document.getElementById("selNome"), "selecionarNome");
-//                 });
 			}
 
             //preencher campo da seção e nomes de colaborador

@@ -276,11 +276,29 @@ function js_recuperaSecaoNomeSup(campoID, campoDesc, origem) {
 
 }
 
-
-//Função para validar os campos da tela apontar antes do envio para o banco
-function js_validaEnvioApont() {
-
-	//valida campos que não podem estar vazios
-	console.log("passou no js_validaEnvioApont");
+//função para carregar os scripts iniciais da tela view/gerenciar.php
+function funIniciaTimeGrid(apontDia) {
+	var varApontTime = document.getElementById('divApontTime');
+	var varDiaAtual = new Date();
+	var varTimeGrid = new FullCalendar.Calendar(varApontTime, {
+		themeSystem: 'bootstrap5',
+		initialView: 'timeGridDay', 
+		initialDate: '2022-06-29', //só exibe o dia atual
+		nowIndicator: true, //indica a hora atual 
+		editable: false, //proibe edição do horario do evento
+		selectable: true, //permite seleção de linha
+		dayMaxEvents: true,
+		slotEventOverlap: false, //não permite eventos sobrepostos visualmente
+		allDaySlot: false, //não exibe opção de evento de "dia inteiro"
+		contentHeight: 'auto', //não permite scroll no TimeGrid
+		headerToolbar: {		
+			left:'',
+			right: 'timeGridDay,listDay'
+		},
+		events: apontDia, //carrega os apontamentos no grid
+		
+	});
+	varTimeGrid.setOption('locale', 'pt-br');
+	varTimeGrid.render();
 }
 

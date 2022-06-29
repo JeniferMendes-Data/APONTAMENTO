@@ -103,3 +103,106 @@
 [2022-06-27 20:37:35] [INFO]: session APV - 1
 [2022-06-27 20:37:35] [INFO]: session CAD_PER - 1
 [2022-06-27 20:37:35] [INFO]: session CAD_SUP - 1
+[2022-06-28 11:25:22] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 11:25:23] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 11:25:33] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 11:25:34] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 11:25:34] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 11:25:34] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 11:25:35] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 13:59:27] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 13:59:28] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 13:59:35] [INFO]: session APT - 1
+[2022-06-28 13:59:35] [INFO]: session APV - 1
+[2022-06-28 13:59:35] [INFO]: session CAD_PER - 1
+[2022-06-28 13:59:35] [INFO]: session CAD_SUP - 1
+[2022-06-28 14:01:37] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 14:01:39] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 14:01:39] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 14:01:39] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 14:01:39] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 14:01:39] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 14:01:40] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 14:01:40] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 14:01:54] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 14:02:32] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 14:06:52] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 14:06:54] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 14:06:55] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 14:07:37] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 14:07:38] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 14:07:42] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 14:07:47] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 14:08:00] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 14:08:00] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 14:08:03] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 14:09:55] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 14:09:58] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 14:15:52] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 14:15:52] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 14:16:04] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 14:18:44] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 14:18:45] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 14:24:06] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 14:24:07] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 14:25:00] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 14:25:02] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 14:25:02] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 14:25:02] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 14:25:02] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 14:25:03] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 14:25:03] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 14:25:03] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 14:25:03] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 14:25:03] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 14:25:04] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 14:25:04] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 14:25:04] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 14:25:04] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 14:25:05] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 14:25:05] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 14:25:05] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 14:25:05] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 14:25:06] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 14:25:06] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 14:25:06] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 14:25:06] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 14:25:39] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 14:27:44] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 14:30:18] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 14:30:29] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 14:30:30] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 16:14:36] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 16:14:56] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 16:17:37] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 16:17:41] [INFO]: session APT - 1
+[2022-06-28 16:17:41] [INFO]: session APV - 1
+[2022-06-28 16:17:41] [INFO]: session CAD_PER - 1
+[2022-06-28 16:17:41] [INFO]: session CAD_SUP - 1
+[2022-06-28 16:34:23] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 16:34:27] [INFO]: session APT - 1
+[2022-06-28 16:34:27] [INFO]: session APV - 1
+[2022-06-28 16:34:27] [INFO]: session CAD_PER - 1
+[2022-06-28 16:34:27] [INFO]: session CAD_SUP - 1
+[2022-06-28 16:41:11] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 16:41:15] [INFO]: session APT - 1
+[2022-06-28 16:41:15] [INFO]: session APV - 1
+[2022-06-28 16:41:15] [INFO]: session CAD_PER - 1
+[2022-06-28 16:41:15] [INFO]: session CAD_SUP - 1
+[2022-06-28 17:19:50] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 17:19:51] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-28 17:19:55] [INFO]: session APT - 1
+[2022-06-28 17:19:55] [INFO]: session APV - 1
+[2022-06-28 17:19:55] [INFO]: session CAD_PER - 1
+[2022-06-28 17:19:55] [INFO]: session CAD_SUP - 1
+[2022-06-29 14:02:41] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-29 14:02:44] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-29 14:03:33] [INFO]: session APT - 1
+[2022-06-29 14:03:33] [INFO]: session APV - 1
+[2022-06-29 14:03:33] [INFO]: session CAD_PER - 1
+[2022-06-29 14:03:33] [INFO]: session CAD_SUP - 1
+[2022-06-29 20:56:34] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-06-29 20:56:44] [INFO]: session APT - 1
+[2022-06-29 20:56:44] [INFO]: session APV - 1
+[2022-06-29 20:56:44] [INFO]: session CAD_PER - 1
+[2022-06-29 20:56:44] [INFO]: session CAD_SUP - 1
