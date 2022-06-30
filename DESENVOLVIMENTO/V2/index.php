@@ -8,7 +8,7 @@ if (session_status() == 1){
 	<head>
 		<?php
 		include 'functions/include.php';
-		include 'functions/global_functions.php';
+		include_once 'functions/global_functions.php';
 
 		echo include_head("APONTAMENTO | LOGIN");
 		?>
@@ -34,7 +34,7 @@ if (session_status() == 1){
                              </div>
                         </div>
                         <div class="col-md-12 text-center pb-3">
-                            <input type="submit" class="btn btn-primary" value="Acessar" name="acessar" id="acessar">
+                            <input type="submit" class="btn btn-primary" name="acessar" id="acessar">
                         </div>
                         <div id="recuperaSenha" class="text-center pb-3">
                           <a class="" href="#">Recuperar Senha</a>

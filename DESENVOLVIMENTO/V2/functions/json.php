@@ -1,6 +1,6 @@
 <?php
 include $_SERVER["DOCUMENT_ROOT"].'/functions/query.php';
-include $_SERVER["DOCUMENT_ROOT"].'/functions/global_functions.php';
+include_once $_SERVER["DOCUMENT_ROOT"].'/functions/global_functions.php';
 
 if (isset($_POST["recuperaDadosOS"])) { //seleciona os dados da OS no RM na tela views/apontar.php -> inpNumOS
     echo json_postRecuperaDadosOS();
@@ -8,9 +8,10 @@ if (isset($_POST["recuperaDadosOS"])) { //seleciona os dados da OS no RM na tela
 } elseif (isset($_POST["recuperaDadosParteAtiv"])){ //seleciona os dados da Parte e da Atividade no RM na tela views/apontar.php -> selParte e selAtiv
     echo json_postRecuperaDadosParteAtiv();
 
-}elseif (isset($_POST["recuperaSecaoNomeSup"])){
+}elseif (isset($_POST["recuperaSecaoNomeSup"])){ //seleciona os dados de Seção, Descrição, Nome, Chapa e Login dos colaboradores da seção para as telas views/apontar.php -> selSecao e views/gerenciar.php -> selNome
     echo json_postRecuperaSecaoNomeSup();
-
+}elseif (isset($_POST["recuperaApontamento"])){ //seleciona os dados de apontamentos realizados na data
+    echo json_postRecuperaApontamento();
 }
 
 //-------------------- INICIO FUNÇÕES --------------------
@@ -51,8 +52,12 @@ function json_postRecuperaSecaoNomeSup() {
     $json = $_POST["recuperaSecaoNomeSup"];
 
     echo json_encode(querySelect_secaoColaborador($json["usuarioLogado"]));
+}
 
+function json_postRecuperaApontamento(){
+    $json = $_POST["recuperaApontamento"];
 
+    echo json_encode(querySelect_buscaApontamento($json["stringUsuario"], $json["data"]));
 }
 
 ?>

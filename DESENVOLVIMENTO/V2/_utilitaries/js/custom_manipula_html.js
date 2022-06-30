@@ -1,5 +1,6 @@
-//variavel global
+//variaveis globais
 var jsonSecaoNomeSup;
+var jsonNomes;
 
 //carrega permissões
 function js_exibeCampos(classe_permissao, display = "", readOnly = "") {
@@ -210,7 +211,7 @@ function js_recuperaSecaoNomeSup(campoID, campoDesc, origem) {
 				campoID.value = posArray["SECAO"];
 				//limpa valores de nome, chapa, partes/peças e atividades para forçar o preenchimento
 				$('#selNome').selectpicker('val', '');
-				$("#selNome option").remove();//remove nomes anteriores
+				$("#selNome option").remove();//remove nomes anteriores					
 				$('#selParte').selectpicker('val', '');
 				$("#selParte option").remove();//remove nomes anteriores
 				$('#selAtiv').selectpicker('val', '');
@@ -277,7 +278,7 @@ function js_recuperaSecaoNomeSup(campoID, campoDesc, origem) {
 }
 
 //função para carregar os scripts iniciais da tela view/gerenciar.php
-function funIniciaTimeGrid(apontDia) {
+function funIniciaTimeGrid() {
 	var varApontTime = document.getElementById('divApontTime');
 	var varDiaAtual = new Date();
 	var varTimeGrid = new FullCalendar.Calendar(varApontTime, {
@@ -292,13 +293,73 @@ function funIniciaTimeGrid(apontDia) {
 		allDaySlot: false, //não exibe opção de evento de "dia inteiro"
 		contentHeight: 'auto', //não permite scroll no TimeGrid
 		headerToolbar: {		
-			left:'',
+			left:'',			
 			right: 'timeGridDay,listDay'
-		},
-		events: apontDia, //carrega os apontamentos no grid
-		
+		},	
 	});
 	varTimeGrid.setOption('locale', 'pt-br');
 	varTimeGrid.render();
 }
 
+//carrega calendario datepicker com a regra de data mínima para apontamento
+function js_DataApontRetroativo(data) {
+	$.datepicker.setDefaults($.datepicker.regional["pt-BR"]);
+	var dataAtual = new Date();
+	//minDate verifica se o parâmetro de lançamento retroativo no _utilitaries->config->ApontRetroativo está setado como true ou se o dia atual é anterior ao dia 5 para liberar apontamento no mês anterior
+	$.datepicker.setDefaults({
+		format:'yyyy-mm-dd',
+		maxDate: new Date(),
+		minDate: new Date(dataAtual.getFullYear(),(data == 1 || dataAtual.getDate() <= 5)?dataAtual.getMonth()-1:dataAtual.getMonth(), 1),
+	});
+}
+
+
+//função para pesquisar apontamentos na tela de gerenciar
+function js_pesquisaGerenciar(dataPesquisa, login, sup) {
+	url = '/functions/json.php';
+
+	if (sup == true && jsonNomes !== "") {
+		stringLogin = "'JENIFER.MENDES','LAISLA.COSTA', 'LUCAS.AMARO'";
+	}else{
+		stringLogin = "'JENIFER.MENDES'";
+	}
+
+	//carrega os dados
+	return $.ajax({
+		url : url,
+		data : {"recuperaApontamento" :
+					{  "stringUsuario": stringLogin,
+						"data": dataPesquisa
+					}
+				},
+		type : "post",
+		success : function(data) {
+			jsonApontamentos = JSON.parse(data);
+		}
+	});
+}
+
+//função para carregar colaboradores subordinados do supervisor
+function js_recuperaNomeIDSup(id_sup) {
+	url = '/functions/json.php';
+
+	//carrega os dados
+	return $.ajax({
+		url : url,
+		data : {"recuperaSecaoNomeSup" :
+					{  "usuarioLogado": id_sup.value
+					}
+				},
+		type : "post",
+		success : function(data) {
+			jsonNomes = JSON.parse(data);
+			if (jsonNomes.length > 0) {
+				for (var i = 0; i < jsonNomes.length; i++) { //alimenta o campo do select de seção na tela
+					$("#" + id_sup.id).append("<option value='" + jsonNomes[i]['LOGIN'] + "'>" + jsonNomes[i]['NOME'] + "</option>");					
+				}
+				$("#" + id_sup.id).selectpicker('refresh');
+				$("#" + id_sup.id).off("shown.bs.select"); //remove o evento de click para não carregar os valores novamente no botão
+			}
+		}
+	});
+}

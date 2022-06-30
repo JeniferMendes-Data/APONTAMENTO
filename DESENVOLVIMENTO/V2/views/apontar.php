@@ -21,14 +21,7 @@ include_once $_SERVER["DOCUMENT_ROOT"].'/_utilitaries/config.php';
         		echo include_menu("Apontar","Apontar Horas");
 
         		//verifica permissões do usuário
-				$readyPermissoes = "";
-        		if (isset($_SESSION["APT"]) && $_SESSION["APT"] == 1) {
-        		    $readyPermissoes .= "js_exibeCampos('APT', '', false);";//prepara string para inserir no onReady da página para cada permissão
-        		}
-        		//verifica permissões do usuário
-        		if (isset($_SESSION["APV"]) && $_SESSION["APV"] == 1) {
-        		    $readyPermissoes .= "js_exibeCampos('APV', '', false);"; //prepara string para inserir no onReady da página para cada permissão
-        		}
+				$readyPermissoes = global_verificaPermissao();
 
         		//retorno de inclusão de apontamento
         		if (isset($_SESSION["msg"])) {
@@ -160,15 +153,8 @@ include_once $_SERVER["DOCUMENT_ROOT"].'/_utilitaries/config.php';
 			if(<?php if (isset($_SESSION["APV"])){ echo $_SESSION["APV"];}else{ echo 0;} ?> == true){ //verifica se colaborador pode aprovar
 
 				//inicializa calendário em campos de datas
-
-    			$.datepicker.setDefaults($.datepicker.regional["pt-BR"]);
-    			var dataAtual = new Date();
-    			//minDate verifica se o parâmetro de lançamento retroativo no _utilitaries->config->ApontRetroativo está setado como true ou se o dia atual é anterior ao dia 5 para liberar apontamento no mês anterior
-    			$.datepicker.setDefaults({
-    				format:'yyyy-mm-dd',
-    				maxDate: new Date(),
-    				minDate: new Date(dataAtual.getFullYear(),((<?php $config = new Config(); echo $config->diaApontRetroativo; ?> == true) || dataAtual.getDate() <= 5)?dataAtual.getMonth()-1:dataAtual.getMonth(), 1),
-    			});
+				var minDate = (<?php $config = new Config(); echo $config->diaApontRetroativo; ?> == true);
+    			js_DataApontRetroativo(minDate); //define minDate no calendário
 
 				$("#inpDataInicio").datepicker({
 					onSelect: function(value, date){

@@ -41,7 +41,6 @@ function post_getLogin() {
             if(isset($tipoPermissao)){
                 foreach ($tipoPermissao as $nomePermissao) {
                     $_SESSION[$nomePermissao["TIPO"]] = $resultado_usuario[0][$nomePermissao["TIPO"]];
-                    global_geraLog("session ".$nomePermissao["TIPO"]." - ".$_SESSION[$nomePermissao["TIPO"]], "info");
                 }
             }
             $_SESSION['msg']='sucessoLogin';

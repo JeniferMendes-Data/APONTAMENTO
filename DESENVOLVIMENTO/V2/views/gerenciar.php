@@ -20,27 +20,30 @@ include_once $_SERVER["DOCUMENT_ROOT"].'/functions/global_functions.php';
             	    echo include_modal("idRetornoLogin","Apontamento de Horas", "Bem-vindo ".$_SESSION['nomeUsuario']. "!", "sucesso");
             	}
         		echo include_menu("Gerenciar","Gerenciar Apontamentos");
+
+				//verifica permissões do usuário
+				$readyPermissoes = global_verificaPermissao();
     	?>
 		<div class="container">
-			<div class="row align-items-end">
-				<div class="col-md-5">
+			<div id="dadosColab" class="row align-items-end justify-content-center">
+				<div class="col-md-2">
 					<div class="form-group">
 						<label for="inpDataFiltro">Data:</label>
 						<input type="text" class="form-control" name="inpDataFiltro" id="inpDataFiltro">
 					</div>
 				</div>
 				<div class="col-md-5">
+					<label for="selNome">Nome:</label>
+					<select id="selNome" name="selNome" type="text" class="selectpicker form-control border APV" data-live-search="true" data-style="btn" disabled>
+						<option value="<?php echo $_SESSION['usuarioLogado'];?>"><?php echo $_SESSION['nomeUsuario'];?></option>
+					</select>
+				</div>
+				<div class="col-md-1 text-end mt-2">
 					<div class="form-group">
-						<label for="inpNome">Nome:</label>
-						<input type="text" class="form-control" name="inpNome" id="inpNome">
+						<button type="button" name="" id="" class="btn bg text-light flex-row" onclick="js_pesquisaGerenciar()"><span class="material-icons">search</span></button>
 					</div>
 				</div>
-				<div class="col-md-2">
-					<div class="form-group">
-						<button type="button" name="" id="" class="btn bg text-light flex-row"><span class="material-icons">search</span></button>
-					</div>
-				</div>
-			</div>
+			</div>			
 			<div class="row mt-2">
 				<div class="accordion" id="accordionExample">
 					<div class="accordion-item">
@@ -87,15 +90,31 @@ include_once $_SERVER["DOCUMENT_ROOT"].'/functions/global_functions.php';
 	</body>
 	<script>
 		$(document).ready(function(){
-			var apontamentos = [
-				{"id":"1234",title:"OS: 014595 - PARTE/PEÇA: BOBINA - ATIV: BOBINAR - RETRABALHO: SIM - SERVIÇO DE CAMPO: SIM", "start":"2022-06-29T08:10:00", "end":"2022-06-29T08:45:00", "url": "http://apontamentolocal/views/apontar.php/"},
-				{groupId: '014595', "title":"OS: 014595 - PARTE/PEÇA: BOBINA - ATIV: BOBINAR - RETRABALHO: SIM - SERVIÇO DE CAMPO: SIM", "start":"2022-06-29T08:46:00", "end":"2022-06-29T09:58:00", "url": "http://apontamentolocal/views/apontar.php/"},
-				{groupId: '014595', "title":"OS: 014595 - PARTE/PEÇA: BOBINA - ATIV: BOBINAR - RETRABALHO: SIM - SERVIÇO DE CAMPO: SIM", "start":"2022-06-29T13:00:00", "end":"2022-06-29T15:00:00"},
-				{groupId: '014595', "title":"OS: 014595 - PARTE/PEÇA: BOBINA - ATIV: BOBINAR - RETRABALHO: SIM - SERVIÇO DE CAMPO: SIM", "start":"2022-06-29T10:00:00", "end":"2022-06-29T12:00:00"},
-				{groupId: '014595', "title":"OS: 014595 - PARTE/PEÇA: BOBINA - ATIV: BOBINAR - RETRABALHO: SIM - SERVIÇO DE CAMPO: SIM", "start":"2022-06-29T07:00:00", "end":"2022-06-29T08:00:00", "html": '<i>some html</i>' }
-			];
 			$("#inpDataFiltro").datepicker();
-			funIniciaTimeGrid(apontamentos);			
+			var minDate = (<?php $config = new Config(); echo $config->diaApontRetroativo; ?> == true);
+			js_DataApontRetroativo(minDate); //define minDate no calendário			
+			$("#inpDataFiltro").datepicker("setDate", "29/06/2022");
+			
+			//verifica se colaborador pode aprovar para liberar a seleção de nomes
+			(<?php if (isset($_SESSION["APV"])){ echo $_SESSION["APV"];}else{ echo 0;} ?> == true)?js_recuperaNomeIDSup(document.getElementById("selNome")):""; 
+
+			//chama função no js que carrega os campos conforme permissão selecionada via PHP
+    		<?php
+    		  echo ($readyPermissoes);
+    		?>
+
+			//carrega os apontamentos com o filtro default new Date().toLocaleDateString('en-ZA')
+			js_pesquisaGerenciar("2022/06/14", document.getElementById("selNome").value);
+
+			// var apontamentos = [	
+			// 	{"id":"1234",title:"OS: 014595 - PARTE/PEÇA: BOBINA - ATIV: BOBINAR - RETRABALHO: SIM - SERVIÇO DE CAMPO: SIM", "start":"2022-06-29T08:10:00", "end":"2022-06-29T08:45:00", "url": "http://apontamentolocal/views/apontar.php/"},
+			// 	{groupId: '014595', "title":"OS: 014595 - PARTE/PEÇA: BOBINA - ATIV: BOBINAR - RETRABALHO: SIM - SERVIÇO DE CAMPO: SIM", "start":"2022-06-29T08:46:00", "end":"2022-06-29T09:58:00", "url": "http://apontamentolocal/views/apontar.php/"},
+			// 	{groupId: '014595', "title":"OS: 014595 - PARTE/PEÇA: BOBINA - ATIV: BOBINAR - RETRABALHO: SIM - SERVIÇO DE CAMPO: SIM", "start":"2022-06-29T13:00:00", "end":"2022-06-29T15:00:00"},
+			// 	{groupId: '014595', "title":"OS: 014595 - PARTE/PEÇA: BOBINA - ATIV: BOBINAR - RETRABALHO: SIM - SERVIÇO DE CAMPO: SIM", "start":"2022-06-29T10:00:00", "end":"2022-06-29T12:00:00"},
+			// 	{groupId: '014595', "title":"OS: 014595 - PARTE/PEÇA: BOBINA - ATIV: BOBINAR - RETRABALHO: SIM - SERVIÇO DE CAMPO: SIM", "start":"2022-06-29T07:00:00", "end":"2022-06-29T08:00:00", "html": '<i>some html</i>' }
+			// ];			
+
+			funIniciaTimeGrid("");
 		});	
 	</script>
 </html> 

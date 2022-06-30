@@ -3,7 +3,7 @@ if (session_status() == 1){
     session_start();
 }
 include_once $_SERVER["DOCUMENT_ROOT"].'/functions/include.php';
-include $_SERVER["DOCUMENT_ROOT"].'/functions/global_functions.php';
+include_once $_SERVER["DOCUMENT_ROOT"].'/functions/global_functions.php';
 ?>
 <!doctype html>
 <html lang="pt-br">
