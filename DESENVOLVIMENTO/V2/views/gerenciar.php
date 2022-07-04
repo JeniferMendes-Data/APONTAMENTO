@@ -40,7 +40,7 @@ include_once $_SERVER["DOCUMENT_ROOT"].'/functions/global_functions.php';
 				</div>
 				<div class="col-md-1 text-end mt-2">
 					<div class="form-group">
-						<button type="button" name="" id="" class="btn bg text-light flex-row" onclick="js_pesquisaGerenciar()"><span class="material-icons">search</span></button>
+						<button type="button" name="" id="" class="btn bg text-light flex-row" onclick="js_pesquisaGerenciar(document.getElementById('inpDataFiltro').value.split('/').reverse().join('/'), document.getElementById('selNome').value, false)"><span class="material-icons">search</span></button>
 					</div>
 				</div>
 			</div>			
@@ -90,31 +90,21 @@ include_once $_SERVER["DOCUMENT_ROOT"].'/functions/global_functions.php';
 	</body>
 	<script>
 		$(document).ready(function(){
+			funIniciaTimeGrid();
 			$("#inpDataFiltro").datepicker();
 			var minDate = (<?php $config = new Config(); echo $config->diaApontRetroativo; ?> == true);
 			js_DataApontRetroativo(minDate); //define minDate no calendário			
-			$("#inpDataFiltro").datepicker("setDate", "29/06/2022");
+			$("#inpDataFiltro").datepicker("setDate", new Date().toLocaleDateString('en-ZA'));
 			
 			//verifica se colaborador pode aprovar para liberar a seleção de nomes
-			(<?php if (isset($_SESSION["APV"])){ echo $_SESSION["APV"];}else{ echo 0;} ?> == true)?js_recuperaNomeIDSup(document.getElementById("selNome")):""; 
+			(<?php if (isset($_SESSION["APV"])){ echo $_SESSION["APV"];}else{ echo 0;} ?> == true)?
+				js_recuperaNomeIDSup(document.getElementById("selNome")):
+				js_pesquisaGerenciar(new Date().toLocaleDateString('en-ZA'), document.getElementById("selNome").value, false);
 
 			//chama função no js que carrega os campos conforme permissão selecionada via PHP
     		<?php
     		  echo ($readyPermissoes);
     		?>
-
-			//carrega os apontamentos com o filtro default new Date().toLocaleDateString('en-ZA')
-			js_pesquisaGerenciar("2022/06/14", document.getElementById("selNome").value);
-
-			// var apontamentos = [	
-			// 	{"id":"1234",title:"OS: 014595 - PARTE/PEÇA: BOBINA - ATIV: BOBINAR - RETRABALHO: SIM - SERVIÇO DE CAMPO: SIM", "start":"2022-06-29T08:10:00", "end":"2022-06-29T08:45:00", "url": "http://apontamentolocal/views/apontar.php/"},
-			// 	{groupId: '014595', "title":"OS: 014595 - PARTE/PEÇA: BOBINA - ATIV: BOBINAR - RETRABALHO: SIM - SERVIÇO DE CAMPO: SIM", "start":"2022-06-29T08:46:00", "end":"2022-06-29T09:58:00", "url": "http://apontamentolocal/views/apontar.php/"},
-			// 	{groupId: '014595', "title":"OS: 014595 - PARTE/PEÇA: BOBINA - ATIV: BOBINAR - RETRABALHO: SIM - SERVIÇO DE CAMPO: SIM", "start":"2022-06-29T13:00:00", "end":"2022-06-29T15:00:00"},
-			// 	{groupId: '014595', "title":"OS: 014595 - PARTE/PEÇA: BOBINA - ATIV: BOBINAR - RETRABALHO: SIM - SERVIÇO DE CAMPO: SIM", "start":"2022-06-29T10:00:00", "end":"2022-06-29T12:00:00"},
-			// 	{groupId: '014595', "title":"OS: 014595 - PARTE/PEÇA: BOBINA - ATIV: BOBINAR - RETRABALHO: SIM - SERVIÇO DE CAMPO: SIM", "start":"2022-06-29T07:00:00", "end":"2022-06-29T08:00:00", "html": '<i>some html</i>' }
-			// ];			
-
-			funIniciaTimeGrid("");
 		});	
 	</script>
 </html> 

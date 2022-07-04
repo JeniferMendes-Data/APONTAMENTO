@@ -1,6 +1,7 @@
 //variaveis globais
 var jsonSecaoNomeSup;
 var jsonNomes;
+var global_calendario;
 
 //carrega permissões
 function js_exibeCampos(classe_permissao, display = "", readOnly = "") {
@@ -280,11 +281,10 @@ function js_recuperaSecaoNomeSup(campoID, campoDesc, origem) {
 //função para carregar os scripts iniciais da tela view/gerenciar.php
 function funIniciaTimeGrid() {
 	var varApontTime = document.getElementById('divApontTime');
-	var varDiaAtual = new Date();
 	var varTimeGrid = new FullCalendar.Calendar(varApontTime, {
 		themeSystem: 'bootstrap5',
 		initialView: 'timeGridDay', 
-		initialDate: '2022-06-29', //só exibe o dia atual
+		initialDate: new Date(), //só exibe o dia selecionado
 		nowIndicator: true, //indica a hora atual 
 		editable: false, //proibe edição do horario do evento
 		selectable: true, //permite seleção de linha
@@ -299,6 +299,7 @@ function funIniciaTimeGrid() {
 	});
 	varTimeGrid.setOption('locale', 'pt-br');
 	varTimeGrid.render();
+	global_calendario = varTimeGrid;
 }
 
 //carrega calendario datepicker com a regra de data mínima para apontamento
@@ -318,10 +319,10 @@ function js_DataApontRetroativo(data) {
 function js_pesquisaGerenciar(dataPesquisa, login, sup) {
 	url = '/functions/json.php';
 
-	if (sup == true && jsonNomes !== "") {
-		stringLogin = "'JENIFER.MENDES','LAISLA.COSTA', 'LUCAS.AMARO'";
+	if (sup == true && (jsonNomes !== undefined || jsonNomes == "")) {
+		stringLogin = jsonNomes.map(function(element){return "'" + element['LOGIN'] + "'";}).join();
 	}else{
-		stringLogin = "'JENIFER.MENDES'";
+		stringLogin = "'" + login + "'";
 	}
 
 	//carrega os dados
@@ -334,7 +335,53 @@ function js_pesquisaGerenciar(dataPesquisa, login, sup) {
 				},
 		type : "post",
 		success : function(data) {
-			jsonApontamentos = JSON.parse(data);
+			if (data == "null") {
+				$(document).ready(function(){
+					bootbox.alert({
+						buttons: {
+							ok: {
+								label: 'OK',
+								className: 'bg text-light'
+							},
+						},
+						centerVertical: true,
+						title: "Apontamento Inexistente",
+						message: "Não foi possível encontrar lançamentos para o período selecionado!",
+					})
+				});
+			} else {				
+				jsonApontamentos = JSON.parse(data);
+				var eventos = global_calendario.getEvents();
+				if (eventos.length > 0) {					
+					eventos.forEach(element => {
+						element.remove();
+					});	
+				};
+
+				// var apt = [	
+				// 	{"id":"1234",title:"OS: 014595 - PARTE/PEÇA: BOBINA - ATIV: BOBINAR - RETRABALHO: SIM - SERVIÇO DE CAMPO: SIM", "start":"2022-07-04T08:10:00", "end":"2022-07-04T08:20:00", "url": "http://apontamentolocal/views/apontar.php/"},
+				// 	{groupId: '014595', "title":"OS: 014595 - PARTE/PEÇA: BOBINA - ATIV: BOBINAR - RETRABALHO: SIM - SERVIÇO DE CAMPO: SIM", "start":"2022-07-04T08:46:00", "end":"2022-07-04T09:58:00", "url": "http://apontamentolocal/views/apontar.php/"},
+				// 	{groupId: '014595', "title":"OS: 014595 - PARTE/PEÇA: BOBINA - ATIV: BOBINAR - RETRABALHO: SIM - SERVIÇO DE CAMPO: SIM", "start":"2022-07-04T13:00:00", "end":"2022-07-04T15:00:00"},
+				// 	{groupId: '014595', "title":"OS: 014595 - PARTE/PEÇA: BOBINA - ATIV: BOBINAR - RETRABALHO: SIM - SERVIÇO DE CAMPO: SIM", "start":"2022-07-04T10:00:00", "end":"2022-07-04T12:00:00"},
+				// 	{groupId: '014595', "title":"OS: 014595 - PARTE/PEÇA: BOBINA - ATIV: BOBINAR - RETRABALHO: SIM - SERVIÇO DE CAMPO: SIM", "start":"2022-07-04T07:00:00", "end":"2022-07-04T08:00:00", "html": '<i>some html</i>' }
+				// ];
+
+				var apt = [];
+
+				jsonApontamentos.forEach(element => {
+					apt.push({
+						id: element["ID_APONTAMENTO"],
+						title: "OS: " + element["N_OS"] + " - PARTE/PEÇA: " + element["PARTE"] + " - ATIV: " + element["ATIVIDADE"] + " - RETRABALHO: " + element["RETRABALHO"] + " - SERVIÇO DE CAMPO: " + element["SERV_CAMPO"], 
+						start: new Date(element["H_INICIO"].date).toJSON(),
+						end: new Date(element["H_FIM"].date).toJSON(),
+						url: ""
+					});
+				});
+
+				global_calendario.gotoDate(new Date(dataPesquisa)); //altera a data do calendário para a mesma dos eventos
+				global_calendario.addEventSource(apt); //adiciona os eventos no calendário
+				global_calendario.render(); //renderiza o calendário com os novos dados
+			}
 		}
 	});
 }
@@ -359,6 +406,8 @@ function js_recuperaNomeIDSup(id_sup) {
 				}
 				$("#" + id_sup.id).selectpicker('refresh');
 				$("#" + id_sup.id).off("shown.bs.select"); //remove o evento de click para não carregar os valores novamente no botão
+				//carrega o TimeGrid a primeira vez na tela para o supervisor
+				js_pesquisaGerenciar(new Date().toLocaleDateString('en-ZA'), id_sup.value, 1);
 			}
 		}
 	});
