@@ -84,7 +84,7 @@ function querySelect_codRequisitante($chapa) {
 
 //Função para carregar os dados dos apontamentos
 function querySelect_buscaApontamento($idUsuario, $data) {
-    $query = "SELECT * FROM LOG_APONTAMENTO WHERE ID_USUARIO IN (".$idUsuario.") AND CONVERT(date,H_INICIO,103)='".$data."'";
+    $query = "SELECT LOG_APONTAMENTO.*, TB_LOGIN.NOME, TB_LOGIN.PSECAO_DESCRICAO FROM LOG_APONTAMENTO (NOLOCK) INNER JOIN TB_LOGIN ON TB_LOGIN.LOGIN = LOG_APONTAMENTO.ID_USUARIO WHERE ID_USUARIO IN (".$idUsuario.") AND CONVERT(date,H_INICIO,103)='".$data."'";
     return realizaConsulta($query, "querySelect_buscaApontamento");
 }
 

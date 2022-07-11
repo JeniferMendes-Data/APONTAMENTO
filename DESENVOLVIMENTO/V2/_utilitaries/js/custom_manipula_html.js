@@ -243,6 +243,7 @@ function js_recuperaSecaoNomeSup(campoID, campoDesc, origem) {
 				$("#selNome option").remove();//remove nomes anteriores
 				document.getElementById("inpChapa").value = "";
 				var nomes = jsonSecaoNomeSup.filter(function(element) { return element.SECAO == document.getElementById("inpSecao").value?element:""; });
+				nomes.sort();
 				if (nomes.length > 0) {
 					for (var i = 0; i < nomes.length; i++) {
 						$("#" + campoDesc.id).append("<option value='" + nomes[i]['NOME'] + "'>" + nomes[i]['NOME'] + "</option>");
@@ -295,7 +296,12 @@ function funIniciaTimeGrid() {
 		headerToolbar: {		
 			left:'',			
 			right: 'timeGridDay,listDay'
-		},	
+		},
+		loading: function (status) {
+			if (status) {
+				$('#divCarregando').show();
+			}
+		}
 	});
 	varTimeGrid.setOption('locale', 'pt-br');
 	varTimeGrid.render();
@@ -336,6 +342,12 @@ function js_pesquisaGerenciar(dataPesquisa, login, sup) {
 		type : "post",
 		success : function(data) {
 			if (data == "null") {
+				var eventos = global_calendario.getEvents();
+				if (eventos.length > 0) {					
+					eventos.forEach(element => {
+						element.remove(); //deleta eventos anteriores
+					});	
+				};
 				$(document).ready(function(){
 					bootbox.alert({
 						buttons: {
@@ -351,36 +363,8 @@ function js_pesquisaGerenciar(dataPesquisa, login, sup) {
 				});
 			} else {				
 				jsonApontamentos = JSON.parse(data);
-				var eventos = global_calendario.getEvents();
-				if (eventos.length > 0) {					
-					eventos.forEach(element => {
-						element.remove();
-					});	
-				};
-
-				// var apt = [	
-				// 	{"id":"1234",title:"OS: 014595 - PARTE/PEÇA: BOBINA - ATIV: BOBINAR - RETRABALHO: SIM - SERVIÇO DE CAMPO: SIM", "start":"2022-07-04T08:10:00", "end":"2022-07-04T08:20:00", "url": "http://apontamentolocal/views/apontar.php/"},
-				// 	{groupId: '014595', "title":"OS: 014595 - PARTE/PEÇA: BOBINA - ATIV: BOBINAR - RETRABALHO: SIM - SERVIÇO DE CAMPO: SIM", "start":"2022-07-04T08:46:00", "end":"2022-07-04T09:58:00", "url": "http://apontamentolocal/views/apontar.php/"},
-				// 	{groupId: '014595', "title":"OS: 014595 - PARTE/PEÇA: BOBINA - ATIV: BOBINAR - RETRABALHO: SIM - SERVIÇO DE CAMPO: SIM", "start":"2022-07-04T13:00:00", "end":"2022-07-04T15:00:00"},
-				// 	{groupId: '014595', "title":"OS: 014595 - PARTE/PEÇA: BOBINA - ATIV: BOBINAR - RETRABALHO: SIM - SERVIÇO DE CAMPO: SIM", "start":"2022-07-04T10:00:00", "end":"2022-07-04T12:00:00"},
-				// 	{groupId: '014595', "title":"OS: 014595 - PARTE/PEÇA: BOBINA - ATIV: BOBINAR - RETRABALHO: SIM - SERVIÇO DE CAMPO: SIM", "start":"2022-07-04T07:00:00", "end":"2022-07-04T08:00:00", "html": '<i>some html</i>' }
-				// ];
-
-				var apt = [];
-
-				jsonApontamentos.forEach(element => {
-					apt.push({
-						id: element["ID_APONTAMENTO"],
-						title: "OS: " + element["N_OS"] + " - PARTE/PEÇA: " + element["PARTE"] + " - ATIV: " + element["ATIVIDADE"] + " - RETRABALHO: " + element["RETRABALHO"] + " - SERVIÇO DE CAMPO: " + element["SERV_CAMPO"], 
-						start: new Date(element["H_INICIO"].date).toJSON(),
-						end: new Date(element["H_FIM"].date).toJSON(),
-						url: ""
-					});
-				});
-
-				global_calendario.gotoDate(new Date(dataPesquisa)); //altera a data do calendário para a mesma dos eventos
-				global_calendario.addEventSource(apt); //adiciona os eventos no calendário
-				global_calendario.render(); //renderiza o calendário com os novos dados
+				interna_atualizaContagem(jsonApontamentos, dataPesquisa); //atualiza o indicador
+				interna_atualizaEventos(jsonApontamentos, dataPesquisa); //atualiza o calendario
 			}
 		}
 	});
@@ -411,4 +395,109 @@ function js_recuperaNomeIDSup(id_sup) {
 			}
 		}
 	});
+}
+
+//função para carregar apontamentos no calendário
+function interna_atualizaEventos(json, data) {	
+	$('#divCarregando').show(); //exibe gif de carregamento no calendário
+	var eventos = global_calendario.getEvents();
+	if (eventos.length > 0) {					
+		eventos.forEach(element => {
+			element.remove(); //deleta eventos anteriores
+		});	
+	};
+
+	var apt = [];
+
+	json.forEach(element => {
+		apt.push({
+			id: element["ID_APONTAMENTO"],
+			title: "OS: " + element["N_OS"] + " - PARTE/PEÇA: " + element["PARTE"] + " - ATIV: " + element["ATIVIDADE"] + " - RETRABALHO: " + element["RETRABALHO"] + " - SERVIÇO DE CAMPO: " + element["SERV_CAMPO"], 
+			start: new Date(element["H_INICIO"].date).toJSON(),
+			end: new Date(element["H_FIM"].date).toJSON(),
+			url: "",
+			backgroundColor: (element["VALIDA"]=="A")?"#03BB85":(element["VALIDA"]=="R")?"#BE2444":"#0D6EFD",
+			borderColor: (element["VALIDA"]=="A")?"#03BB85":(element["VALIDA"]=="R")?"#BE2444":"#0D6EFD"
+		});	
+	});
+
+	global_calendario.gotoDate(new Date(data)); //altera a data do calendário para a mesma dos eventos
+	global_calendario.addEventSource(apt); //adiciona os eventos no calendário
+	global_calendario.render(); //renderiza o calendário com os novos dados
+	
+	$('#divCarregando').hide(); //oculta gif de carregamento no calendário
+}
+
+//função para carregar o indicador de apontamentos
+function interna_atualizaContagem(json, data) {
+	var objSecao = {}, objColab = {}, itemS = "", itemC = "", arrSecao, arrColab, sumHoras;
+
+	json.forEach(element => { //alimenta um objeto com a seção e cada colaborador que realizou apontamento para a data filtrada
+		var secaoAtual = element["PSECAO_DESCRICAO"];
+		var nomeAtual = element['NOME'];
+		var hInicio = element['H_INICIO'];
+		var hFim = element['H_FIM'];
+		var valida = element['VALIDA'];
+		if (!objSecao[secaoAtual]) { //verifica se a seção não existe no array
+			objSecao = {[secaoAtual]:[nomeAtual]}; //inclui colaborador na secao
+			objColab = {[nomeAtual]:[[hInicio, hFim, valida]]} //inclui horas e status no array de colaborador
+			return;
+		}else if (objSecao[secaoAtual].every(function(el){el !== nomeAtual})){//verifica se o nome não existe no array da seção			
+			objSecao[secaoAtual].push(nomeAtual); //inclui colaborador na secao
+			objColab[nomeAtual].push([hInicio, hFim, valida]); //inclui horas e status no array de colaborador
+		}else{
+			objColab[nomeAtual].push([hInicio, hFim, valida]); //inclui horas e status no array de colaborador
+		}
+	});
+	
+	arrSecao = Object.keys(objSecao);
+	arrColab = Object.keys(objColab);
+	jsonNomes.forEach(eleNome => {(arrColab.includes(eleNome['NOME'])?"":arrColab.push(eleNome['NOME']))}); //completa a lista de nomes com colaboradores que não realizaram apontamento na data
+	document.getElementById("divSecaoInd").innerHTML = ""; //limpa a div para recarregar a lista de seções
+
+	arrSecao.forEach(el => { 
+		itemS = '<div class="accordion-item"><h2 class="accordion-header" id = "tit' + el.split(" ").join("").toLocaleLowerCase() + '"><button class="accordion-button collapsed bg text-light" type="button" data-bs-toggle="collapse" data-bs-target="#col' + el.split(" ").join("").toLocaleLowerCase() + '" aria-expanded="false" aria-controls="col' + el.split(" ").join("").toLocaleLowerCase() + '">'+ el + '</button></h2><div id="col' + el.split(" ").join("").toLocaleLowerCase() + '" class="accordion-collapse collapse" aria-labelledby="tit' + el.split(" ").join("").toLocaleLowerCase() + '" data-bs-parent="#divSecaoInd">';
+		arrColab.sort();
+		arrColab.forEach(elC => { //carrega colaboradores da secao
+			itemC += '<div class="row align-items-center"><div class="accordion-body col-md-4">'+ elC +':</div>';//cria o nome na lista
+			sumHoras = interna_somaHoras(objColab[elC]);
+			itemC += '<div class="col-md-6"><div class="progress"><div class="progress-bar" role="progressbar" aria-valuenow="'+ sumHoras[0][1] +'" aria-valuemin="0" aria-valuemax="100" style="width: '+ sumHoras[0][1] +'%">'+ sumHoras[0][1] +'%</div></div></div><div class="progress-bar" role="progressbar" aria-valuenow="'+ sumHoras[0][2] +'" aria-valuemin="0" aria-valuemax="100" style="width: '+ sumHoras[0][2] +'%">'+ sumHoras[0][2] +'%</div></div></div><div class="progress-bar" role="progressbar" aria-valuenow="'+ sumHoras[0][3] +'" aria-valuemin="0" aria-valuemax="100" style="width: '+ sumHoras[0][3] +'%">'+ sumHoras[0][3] +'%</div>'+ sumHoras[0][0] +'%</div></div><div class="col-md-2">'+ sumHoras[1] +'</div></div>';		
+		});
+		//inclui div de colaboradores na string da collapse da seção;
+		itemS += itemC + '</div></div>';
+		document.getElementById("divSecaoInd").innerHTML += itemS; //adiciona cada seção na tela
+	});
+
+}
+
+//função para somar horas apontadas pelo(s) colaborador(es) no dia
+function interna_somaHoras(objColab) {
+	var dtHIni, dtHFim, resultMin = 0,  resultA = 0, resultP = 0, resultR = 0, totalHra, totalPerc;
+	if (objColab == undefined) {
+		totalPerc = [[0,0,0,0]];
+		totalHra = 0;
+	} else {
+		objColab.forEach(element => {
+			dtHIni = new Date(element[0].date);
+			dtHFim = new Date(element[1].date);
+			resultMin += ((dtHFim.getHours() - dtHIni.getHours())*60) + (dtHFim.getMinutes() - dtHIni.getMinutes());
+			switch (element[2]) { //calcula percentual conforme o status
+				case "A":
+					resultA += resultMin;
+					break;
+				case "R":
+					resultR += resultMin;
+					break;
+				default:
+					resultP += resultMin;
+					break;
+			}
+		});
+		totalHra = Math.floor(resultMin/ 60) + ":" + (resultMin % 60); //soma de horas trabalhadas
+		totalPerc = [[(resultMin/480)*100], //percentual total --Usa 8hrs como base
+					[resultA>0?(resultA/480)*100:0], //percentual de aprovados
+					[resultR>0?(resultR/480)*100:0], //percentual de reprovados
+					[resultP>0?(resultP/480)*100:0]] //percentual de pendentes
+	}		
+	return [totalPerc, totalHra];
 }
