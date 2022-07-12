@@ -301,6 +301,9 @@ function funIniciaTimeGrid() {
 			if (status) {
 				$('#divCarregando').show();
 			}
+		},
+		eventClick: function(info) {
+			funIniciaEditAprov(info);
 		}
 	});
 	varTimeGrid.setOption('locale', 'pt-br');
@@ -364,7 +367,7 @@ function js_pesquisaGerenciar(dataPesquisa, login, sup) {
 			} else {				
 				jsonApontamentos = JSON.parse(data);
 				interna_atualizaContagem(jsonApontamentos, dataPesquisa); //atualiza o indicador
-				interna_atualizaEventos(jsonApontamentos, dataPesquisa); //atualiza o calendario
+				interna_atualizaEventos(jsonApontamentos, dataPesquisa, login); //atualiza o calendario
 			}
 		}
 	});
@@ -398,7 +401,7 @@ function js_recuperaNomeIDSup(id_sup) {
 }
 
 //função para carregar apontamentos no calendário
-function interna_atualizaEventos(json, data) {	
+function interna_atualizaEventos(json, data, login) {	
 	$('#divCarregando').show(); //exibe gif de carregamento no calendário
 	var eventos = global_calendario.getEvents();
 	if (eventos.length > 0) {					
@@ -409,16 +412,26 @@ function interna_atualizaEventos(json, data) {
 
 	var apt = [];
 
-	json.forEach(element => {
-		apt.push({
-			id: element["ID_APONTAMENTO"],
-			title: "OS: " + element["N_OS"] + " - PARTE/PEÇA: " + element["PARTE"] + " - ATIV: " + element["ATIVIDADE"] + " - RETRABALHO: " + element["RETRABALHO"] + " - SERVIÇO DE CAMPO: " + element["SERV_CAMPO"], 
-			start: new Date(element["H_INICIO"].date).toJSON(),
-			end: new Date(element["H_FIM"].date).toJSON(),
-			url: "",
-			backgroundColor: (element["VALIDA"]=="A")?"#03BB85":(element["VALIDA"]=="R")?"#BE2444":"#0D6EFD",
-			borderColor: (element["VALIDA"]=="A")?"#03BB85":(element["VALIDA"]=="R")?"#BE2444":"#0D6EFD"
-		});	
+	json.forEach(element => {//carrega os apontamentos apenas do usuário selecionado no filtro
+		if (element["ID_USUARIO"] == login) {
+			apt.push({
+				id: element["ID_APONTAMENTO"],
+				title: "OS: " + element["N_OS"] + " - PARTE/PEÇA: " + element["PARTE"] + " - ATIV: " + element["ATIVIDADE"] + " - RETRABALHO: " + element["RETRABALHO"] + " - SERVIÇO DE CAMPO: " + element["SERV_CAMPO"], 
+				start: new Date(element["H_INICIO"].date).toJSON(),
+				end: new Date(element["H_FIM"].date).toJSON(),
+				extendedProps: {
+					OS: element["N_OS"],
+					PARTE: element["PARTE"],
+					ATIVIDADE: element["ATIVIDADE"],
+					RETRABALHO: element["RETRABALHO"],
+					SERV_CAMPO: element["SERV_CAMPO"],
+					STATUS: element["VALIDA"],
+					NOME: element["NOME"]
+				},
+				backgroundColor: (element["VALIDA"]=="A")?"#03BB85":(element["VALIDA"]=="R")?"#BE2444":"#0D6EFD",
+				borderColor: (element["VALIDA"]=="A")?"#03BB85":(element["VALIDA"]=="R")?"#BE2444":"#0D6EFD"
+			});	
+		}			
 	});
 
 	global_calendario.gotoDate(new Date(data)); //altera a data do calendário para a mesma dos eventos
@@ -442,11 +455,11 @@ function interna_atualizaContagem(json, data) {
 			objSecao = {[secaoAtual]:[nomeAtual]}; //inclui colaborador na secao
 			objColab = {[nomeAtual]:[[hInicio, hFim, valida]]} //inclui horas e status no array de colaborador
 			return;
-		}else if (objSecao[secaoAtual].every(function(el){el !== nomeAtual})){//verifica se o nome não existe no array da seção			
-			objSecao[secaoAtual].push(nomeAtual); //inclui colaborador na secao
-			objColab[nomeAtual].push([hInicio, hFim, valida]); //inclui horas e status no array de colaborador
+		}else if (objSecao[secaoAtual].find(elNA => elNA == nomeAtual)){//verifica se o nome existe no array da seção			
+			objColab[nomeAtual].push([hInicio, hFim, valida]); //inclui horas e status no array de colaborador			
 		}else{
-			objColab[nomeAtual].push([hInicio, hFim, valida]); //inclui horas e status no array de colaborador
+			objSecao[secaoAtual].push(nomeAtual); //inclui colaborador na secao
+			Object.assign(objColab, {[nomeAtual]:[[hInicio, hFim, valida]]}); //inclui horas e status no array de colaborador
 		}
 	});
 	
@@ -455,41 +468,42 @@ function interna_atualizaContagem(json, data) {
 	jsonNomes.forEach(eleNome => {(arrColab.includes(eleNome['NOME'])?"":arrColab.push(eleNome['NOME']))}); //completa a lista de nomes com colaboradores que não realizaram apontamento na data
 	document.getElementById("divSecaoInd").innerHTML = ""; //limpa a div para recarregar a lista de seções
 
-	arrSecao.forEach(el => { 
+	arrSecao.forEach(el => { //carrega collapse de seção		
 		itemS = '<div class="accordion-item"><h2 class="accordion-header" id = "tit' + el.split(" ").join("").toLocaleLowerCase() + '"><button class="accordion-button collapsed bg text-light" type="button" data-bs-toggle="collapse" data-bs-target="#col' + el.split(" ").join("").toLocaleLowerCase() + '" aria-expanded="false" aria-controls="col' + el.split(" ").join("").toLocaleLowerCase() + '">'+ el + '</button></h2><div id="col' + el.split(" ").join("").toLocaleLowerCase() + '" class="accordion-collapse collapse" aria-labelledby="tit' + el.split(" ").join("").toLocaleLowerCase() + '" data-bs-parent="#divSecaoInd">';
 		arrColab.sort();
 		arrColab.forEach(elC => { //carrega colaboradores da secao
-			itemC += '<div class="row align-items-center"><div class="accordion-body col-md-4">'+ elC +':</div>';//cria o nome na lista
+			login = jsonNomes.filter(function (elNL){if (elNL["NOME"] == elC){return elNL;}});
+			itemC += '<div class="row align-items-center" ondblclick="js_alteraFiltroNome(\''+ login[0]["LOGIN"] +'\')"><div class="accordion-body col-md-4">'+ elC +':</div>';//cria o nome na lista
 			sumHoras = interna_somaHoras(objColab[elC]);
-			itemC += '<div class="col-md-6"><div class="progress"><div class="progress-bar" role="progressbar" aria-valuenow="'+ sumHoras[0][1] +'" aria-valuemin="0" aria-valuemax="100" style="width: '+ sumHoras[0][1] +'%">'+ sumHoras[0][1] +'%</div></div></div><div class="progress-bar" role="progressbar" aria-valuenow="'+ sumHoras[0][2] +'" aria-valuemin="0" aria-valuemax="100" style="width: '+ sumHoras[0][2] +'%">'+ sumHoras[0][2] +'%</div></div></div><div class="progress-bar" role="progressbar" aria-valuenow="'+ sumHoras[0][3] +'" aria-valuemin="0" aria-valuemax="100" style="width: '+ sumHoras[0][3] +'%">'+ sumHoras[0][3] +'%</div>'+ sumHoras[0][0] +'%</div></div><div class="col-md-2">'+ sumHoras[1] +'</div></div>';		
+			itemC += '<div class="col-md-6"><div class="progress"><div class="progress-bar" role="progressbar" aria-valuenow="'+ sumHoras[0][1] +'" aria-valuemin="0" aria-valuemax="100" style="background-color: #03BB85; width: '+ sumHoras[0][1] +'%"></div><div class="progress-bar" role="progressbar" aria-valuenow="'+ sumHoras[0][2] +'" aria-valuemin="0" aria-valuemax="100" style="background-color: #BE2444; width: '+ sumHoras[0][2] +'%"></div><div class="progress-bar" role="progressbar" aria-valuenow="'+ sumHoras[0][3] +'" aria-valuemin="0" aria-valuemax="100" style="width: '+ sumHoras[0][3] +'%"></div>'+ sumHoras[0][0] +'%</div></div><div class="col-md-2">'+ sumHoras[1] +'</div></div>';		
 		});
 		//inclui div de colaboradores na string da collapse da seção;
 		itemS += itemC + '</div></div>';
-		document.getElementById("divSecaoInd").innerHTML += itemS; //adiciona cada seção na tela
+		document.getElementById("divSecaoInd").innerHTML += itemS; //adiciona a collapse de seção completa na tela
 	});
-
 }
 
 //função para somar horas apontadas pelo(s) colaborador(es) no dia
 function interna_somaHoras(objColab) {
-	var dtHIni, dtHFim, resultMin = 0,  resultA = 0, resultP = 0, resultR = 0, totalHra, totalPerc;
+	var dtHIni, dtHFim,result = 0,  resultMin = 0,  resultA = 0, resultP = 0, resultR = 0, totalHra, totalPerc;
 	if (objColab == undefined) {
-		totalPerc = [[0,0,0,0]];
+		totalPerc = [[0],[0],[0],[0]];
 		totalHra = 0;
 	} else {
 		objColab.forEach(element => {
 			dtHIni = new Date(element[0].date);
 			dtHFim = new Date(element[1].date);
-			resultMin += ((dtHFim.getHours() - dtHIni.getHours())*60) + (dtHFim.getMinutes() - dtHIni.getMinutes());
+			result = ((dtHFim.getHours() - dtHIni.getHours())*60) + (dtHFim.getMinutes() - dtHIni.getMinutes());
+			resultMin += result;
 			switch (element[2]) { //calcula percentual conforme o status
 				case "A":
-					resultA += resultMin;
+					resultA += result;
 					break;
 				case "R":
-					resultR += resultMin;
+					resultR += result;
 					break;
 				default:
-					resultP += resultMin;
+					resultP += result;
 					break;
 			}
 		});
@@ -500,4 +514,20 @@ function interna_somaHoras(objColab) {
 					[resultP>0?(resultP/480)*100:0]] //percentual de pendentes
 	}		
 	return [totalPerc, totalHra];
+}
+//função para alterar a option selecionada no filtro de nome
+function js_alteraFiltroNome(login) {
+	$('#selNome').selectpicker('val', login);
+	$('#selNome').selectpicker('refresh');
+
+	js_pesquisaGerenciar(document.getElementById('inpDataFiltro').value.split('/').reverse().join('/'), document.getElementById('selNome').value, false); //chama função para atualizar o grid de apontamentos
+}
+
+//função para montar o modal de edição e aprovação de apontamento
+function funIniciaEditAprov(dadosApont) {
+	var divModal = new bootstrap.Modal(document.getElementById('divEditAprov'));	
+	divModal.show();
+	var div = document.querySelector("#divEditAprov");
+	div.dataset.OS = dadosApont.event.extendedProps.OS;
+	$("h5[data-tit]")
 }
