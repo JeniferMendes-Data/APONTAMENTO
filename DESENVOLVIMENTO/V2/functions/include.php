@@ -41,7 +41,9 @@ function include_head($titulo){
                 <script src="http://'.$_SERVER["HTTP_HOST"].'/_utilitaries/js/bootstrap-select.min.js"></script>
                 <script src="http://'.$_SERVER["HTTP_HOST"].'/_utilitaries/js/bootbox.min.js"></script>
                 <script src="http://'.$_SERVER["HTTP_HOST"].'/_utilitaries/js/bootbox.locales.min.js"></script>
-                <script src="http://'.$_SERVER["HTTP_HOST"].'/_utilitaries/js/custom_manipula_html.js"></script>
+                <script src="http://'.$_SERVER["HTTP_HOST"].'/_utilitaries/js/custom_global.js"></script>
+                <script src="http://'.$_SERVER["HTTP_HOST"].'/_utilitaries/js/custom_apontar.js"></script>
+                <script src="http://'.$_SERVER["HTTP_HOST"].'/_utilitaries/js/custom_gerenciar.js"></script>
                 <script src="http://'.$_SERVER["HTTP_HOST"].'/_utilitaries/js/fullCalendar-main.min.js"></script>
                 <script src="http://'.$_SERVER["HTTP_HOST"].'/_utilitaries/js/fullCalendar-pt-br.js"></script>';
     return $retorno;
