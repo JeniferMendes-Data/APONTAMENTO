@@ -1,4 +1,3 @@
-
 //função para carregar os scripts iniciais da tela view/gerenciar.php
 function funIniciaTimeGrid(sup) {
 	var varApontTime = document.getElementById('divApontTime');
@@ -18,14 +17,14 @@ function funIniciaTimeGrid(sup) {
 			left:'',			
 			right: 'timeGridDay,listDay'
 		},
-		loading: function (status) {
-			if (status) {
+		eventOrder: document.getElementById("selAcao").value == 2?"title":"start",
+		loading: function (parStatus) {
+			if (parStatus) {
 				$('#divCarregando').show();
 			}
 		},
 		eventClick: function(evento) {
-			//document.getElementsByClassName('fc-timeGridDay-button')[0].style.display = ''
-			document.getElementById("selAcao").value == 2?console.log(evento.event.id):funIniciaEditAprov(evento, sup)
+			document.getElementById("selAcao").value == 2?interna_selecionaAprovacao(evento):interna_editApont(evento, sup);
 		}
 	});
 	varTimeGrid.setOption('locale', 'pt-br');
@@ -36,6 +35,9 @@ function funIniciaTimeGrid(sup) {
 //função para pesquisar apontamentos na tela de gerenciar
 function js_pesquisaGerenciar(dataPesquisa, login, acao, sup) {
 	url = '/functions/json.php';
+
+	document.getElementById("divSecaoInd").innerHTML = '';
+	$("#aprovExecutar").off();//remove evento do botão
 
 	if (sup == true && (jsonNomes !== undefined || jsonNomes == "")) {
 		stringLogin = jsonNomes.map(function(element){return "'" + element['LOGIN'] + "'";}).join();
@@ -48,7 +50,8 @@ function js_pesquisaGerenciar(dataPesquisa, login, acao, sup) {
 		url : url,
 		data : {"recuperaApontamento" :
 					{  "stringUsuario": stringLogin,
-						"data": dataPesquisa
+						"data": dataPesquisa,
+						"login": login
 					}
 				},
 		type : "post",
@@ -76,7 +79,7 @@ function js_pesquisaGerenciar(dataPesquisa, login, acao, sup) {
 			} else {				
 				jsonApontamentos = JSON.parse(data);
 				if(acao==2){
-					interna_aprova();
+					interna_botaoAprova();
 				}else{
 					interna_atualizaContagem(jsonApontamentos, dataPesquisa, sup); //atualiza o indicador
 				}
@@ -121,6 +124,7 @@ function js_recuperaNomeIDSup(id_sup) {
 function interna_atualizaEventos(json, data, acao, login) {	
 	var varDisplayTimeGrid = 'none',varCondicao='', varClassName='', varBackgroundColor='', varBorderColor='';
 	$('#divCarregando').show(); //exibe gif de carregamento no calendário
+	
 	var eventos = global_calendario.getEvents();
 	if (eventos.length > 0) {					
 		eventos.forEach(element => {
@@ -128,9 +132,13 @@ function interna_atualizaEventos(json, data, acao, login) {
 		});	
 	};
 
+	//reseta variaveis de linhas selecionadas para aprovação
+	global_selectApvRpv = [];
 	var apt = [];
+
 	if (acao==2) { //aprovar
 		global_calendario.changeView('listDay');
+		global_calendario.setOption('eventOrder','title'); //ordena pelo nome
 		varClassName='aprov';
 		if (login == 'TODOS') {
 			varCondicao='element["VALIDA"] == "P"';			
@@ -139,6 +147,8 @@ function interna_atualizaEventos(json, data, acao, login) {
 		}
 	} else if(login == 'TODOS') { //filtro de supervisor
 		global_calendario.changeView('listDay');
+		varBackgroundColor='(element["VALIDA"]=="A")?"#03BB85":(element["VALIDA"]=="R")?"#BE2444":"#0D6EFD"';
+		varBorderColor='(element["VALIDA"]=="A")?"#03BB85":(element["VALIDA"]=="R")?"#BE2444":"#0D6EFD"';		
 		varCondicao='1==1';
 	}else{
 		varDisplayTimeGrid = '';
@@ -151,24 +161,29 @@ function interna_atualizaEventos(json, data, acao, login) {
 		if (eval(varCondicao)) {
 			apt.push({
 					id: element["ID_APONTAMENTO"],
-					title: "RESPONSÁVEL: " + element["ID_USUARIO"] + " - OS: " + element["N_OS"] + " - PARTE/PEÇA: " + element["PARTE"] + " - ATIV: " + element["ATIVIDADE"] + " - RETRABALHO: " + element["RETRABALHO"] + " - SERVIÇO DE CAMPO: " + element["SERV_CAMPO"], 
+					title: element["ID_USUARIO"] + " - OS: " + element["N_OS"] + " - PARTE/PEÇA: " + element["PARTE_DESC"] + " - ATIV: " + element["ATIV_DESC"] + " - RETRABALHO: " + element["RETRABALHO"] + " - SERVIÇO DE CAMPO: " + element["SERV_CAMPO"], 
 					start: new Date(element["H_INICIO"].date).toJSON(),
 					end: new Date(element["H_FIM"].date).toJSON(),
 				extendedProps: {
 					OS: element["N_OS"],
-					PARTE: element["PARTE"],
+					PARTE: element["PARTE"],					
+					PARTEDESC: element["PARTE_DESC"],
 					ATIVIDADE: element["ATIVIDADE"],
+					ATIVIDADEDESC: element["ATIV_DESC"],
 					RETRABALHO: element["RETRABALHO"],
 					SERV_CAMPO: element["SERV_CAMPO"],
 					STATUS: element["VALIDA"],
 					NOME: element["NOME"],
 					H_INICIO: element["H_INICIO"],
 					H_FIM: element["H_FIM"],
-					SECAO: element["SECAO_APONT"]
+					SECAO: element["SECAO_APONT"],
+					OBS: element["OBS"],
+					ID_USUARIO: element["ID_USUARIO"],
+					CHECK: false
 				},
 				className: varClassName,				
-				backgroundColor: varBackgroundColor,
-				borderColor: varBorderColor			
+				backgroundColor: eval(varBackgroundColor),
+				borderColor: eval(varBorderColor)			
 			});	
 		}			
 	});
@@ -211,6 +226,8 @@ function interna_atualizaContagem(json, data, sup) {
 		});		
 	}	
 	document.getElementById("divSecaoInd").innerHTML = ""; //limpa a div para recarregar a lista de seções
+	$("#aprovExecutar").off();//remove evento do botão
+	
 	arrColab.sort();
 	arrSecao.forEach(el => { //carrega collapse de seção
 		itemC = "";		
@@ -278,42 +295,299 @@ function js_alteraFiltroNome(login) {
 }
 
 //função para montar o modal de edição e aprovação de apontamento
-function funIniciaEditAprov(dadosApont, sup) {
-	var hoje = new Date();
-	var divModal = new bootstrap.Modal(document.getElementById('divEditAprov'));		
+function interna_editApont(dadosApont, sup) {
+	var hoje = new Date(), ontem = new Date();
+	var readOnly = true, required = false, aprov = false, enviarEdit = false, msgRetorno = "";
+	var botaoFechar = document.getElementById("btnFechar");
+	var botaoEditar = document.getElementById("btnEditar");
+	var botaoAprovar = document.getElementById("btnAprovar");
+	var aprovarDisplay = 'none', editarDisplay = 'none', fecharInnerHTML = 'Fechar', selParte, selAtiv,selParteDesc, selAtivDesc, selCausaRetrabalho;
+
+	ontem.setDate(hoje.getDate() -1);
+
+	var modal = document.getElementById('divEditAprov');
+	var divModal = bootstrap.Modal.getOrCreateInstance(modal);		
 	var campos = {	 //elementos do modal a serem preenchidos	
 		lblEditAprov: document.querySelector("#lblEditAprov"),
-		inpDataApt: document.querySelector("#inpDataApt"),
-		inpHraIni: document.querySelector("#inpHraIni") ,
-		inpHraFim: document.querySelector("#inpHraFim"),
-		selParte: document.querySelector("#selParte"),
-		selAtiv: document.querySelector("#selAtiv"),
-		selCausaRetrabalho: document.querySelector("#selCausaRetrabalho"),
+		inpDataApt: document.querySelector("#inpDataInicio"),
+		inpHoraInicio: document.querySelector("#inpHoraInicio") ,
+		inpHoraFim: document.querySelector("#inpHoraFim"),
 		inpServCampo: document.querySelector("#inpServCampo"),
-		secao: document.querySelector("#inpSecao"),
 		inpNumOS: document.querySelector("#inpNumOS"),
-		inpSecao: document.querySelector("#inpSecao")		
+		inpSecao: document.querySelector("#inpSecao"),
+		inpObs: document.querySelector("#inpObs")	
 	};
 	//carrega opções dos campos de select
 	//js_recuperaDadosParteAtiv(document.querySelector("#selParte"))	
 
 	//carrega valor nos campos
 	campos.lblEditAprov.innerHTML = !dadosApont.event.extendedProps.NOME?"Não informado":dadosApont.event.extendedProps.NOME; //nome do colaborador no título
-	campos.inpNumOS.value = !dadosApont.event.extendedProps.OS?"Não informado":dadosApont.event.extendedProps.OS;
-	campos.inpDataApt.value = new Date(dadosApont.event.extendedProps.H_INICIO.date).toLocaleDateString();
-	campos.inpHraIni.value = new Date(dadosApont.event.extendedProps.H_INICIO.date).toLocaleTimeString();
-	campos.inpHraFim.value = new Date(dadosApont.event.extendedProps.H_FIM.date).toLocaleTimeString();
-	campos.selParte.value = !dadosApont.event.extendedProps.PARTE?"Não informado":dadosApont.event.extendedProps.PARTE;
-	campos.selAtiv.value = !dadosApont.event.extendedProps.ATIVIDADE?"Não informado":dadosApont.event.extendedProps.ATIVIDADE;
-	campos.selCausaRetrabalho.value = !dadosApont.event.extendedProps.RETRABALHO?"Não informado":dadosApont.event.extendedProps.RETRABALHO;
-	campos.inpServCampo.value = !dadosApont.event.extendedProps.SERV_CAMPO?"Não informado":dadosApont.event.extendedProps.SERV_CAMPO;	
-	campos.inpSecao.value = !dadosApont.event.extendedProps.SECAO?"Não informado":dadosApont.event.extendedProps.SECAO;	
+	campos.inpNumOS.value = !dadosApont.event.extendedProps.OS?"Não informado":dadosApont.event.extendedProps.OS.substring(dadosApont.event.extendedProps.OS.length -6);
+	campos.inpDataApt.value = new Date(dadosApont.event.extendedProps.H_INICIO.date).toLocaleDateString('en-GB');
+	campos.inpHoraInicio.value = new Date(dadosApont.event.extendedProps.H_INICIO.date).toLocaleTimeString();
+	campos.inpHoraInicio.value = campos.inpHoraInicio.value.slice(0,-3); //mantem time no padrão H:i
+	campos.inpHoraFim.value = new Date(dadosApont.event.extendedProps.H_FIM.date).toLocaleTimeString();
+	campos.inpHoraFim.value = campos.inpHoraFim.value.slice(0,-3); //mantem time no padrão H:i
+	selParte = !dadosApont.event.extendedProps.PARTE?"Não informado":dadosApont.event.extendedProps.PARTE;
+	selAtiv = !dadosApont.event.extendedProps.ATIVIDADE?"Não informado":dadosApont.event.extendedProps.ATIVIDADE;
+	selParteDesc = !dadosApont.event.extendedProps.PARTEDESC?"Não informado":dadosApont.event.extendedProps.PARTEDESC;
+	selAtivDesc = !dadosApont.event.extendedProps.ATIVIDADEDESC?"Não informado":dadosApont.event.extendedProps.ATIVIDADEDESC;
+	selCausaRetrabalho = !dadosApont.event.extendedProps.RETRABALHO?"Não informado":dadosApont.event.extendedProps.RETRABALHO;
+	campos.inpServCampo.value = !dadosApont.event.extendedProps.SERV_CAMPO?"N":dadosApont.event.extendedProps.SERV_CAMPO;	
+	campos.inpServCampo.checked = campos.inpServCampo.value == "S"?true:false;
+	campos.inpSecao.value = !dadosApont.event.extendedProps.SECAO?"Não informado":dadosApont.event.extendedProps.SECAO;		
+	campos.inpObs.value = !dadosApont.event.extendedProps.SECAO?"":dadosApont.event.extendedProps.OBS;		
+	
 
-	if (campos.inpDataApt.value == hoje.toLocaleDateString() || sup) {
-		
+
+	if (!dadosApont.event.extendedProps.SECAO) {//permite edicao apenas em apontamentos que possuem o campo SECAO_APONT na tabela preenchidos
+		readOnly = true;
+		required = false;
+		aprovarDisplay = 'none';
+		editarDisplay = 'none';
+		fecharInnerHTML = 'Fechar';
+	} else if (dadosApont.event.extendedProps.STATUS && dadosApont.event.extendedProps.STATUS == 'P') { //apontamento pendente permite edição		
+		if (sup && campos.inpDataApt.value <= ontem.toLocaleDateString('en-GB')) {//habilita botão de edicao e aprovação
+			readOnly = false;
+			required = true;
+			aprovarDisplay= 'block';
+			editarDisplay = 'block';
+			fecharInnerHTML = 'Cancelar';
+		}else if (!sup && campos.inpDataApt.value == hoje.toLocaleDateString('en-GB')){ //habilita edicao do colaborador
+			readOnly = false;
+			required = true;
+			aprovarDisplay = 'none';
+			editarDisplay = 'block';
+			fecharInnerHTML = 'Cancelar';
+		}else{//Fora do período permitido para edição
+			readOnly = true;
+			required = false;
+			aprovarDisplay = 'block';
+			editarDisplay = 'none';
+			fecharInnerHTML = 'Fechar';
+		}
+	}else{//habilita somente consulta
+		readOnly = true;
+		required = false;
+		aprovarDisplay = 'none';
+		editarDisplay = 'none';
+		fecharInnerHTML = 'Fechar';
 	}
+	
 
-	if (!dadosApont.event.extendedProps.SECAO) {
+	divModal.show();
+
+	$("#selParte, #selAtiv, #selCausaRetrabalho").selectpicker();//inicia os selects
+
+	var camposEdit = document.querySelectorAll(".EDIT");
+
+	camposEdit.forEach(ele => {
+		if (ele.type == "select-one" || ele.type == 'checkbox' || ele.type == 'button') {
+			ele.disabled = readOnly;				
+		}else{
+			ele.readOnly = readOnly;
+		}
+		ele.required = required;
+	});
+
+	botaoAprovar.style.display = aprovarDisplay;
+	botaoEditar.style.display = editarDisplay;
+	botaoFechar.innerHTML = fecharInnerHTML;
+	var retorno;
+	$('#' + botaoEditar.id).on('click', function (element) {
+		if (document.getElementById("inpDataInicio").value == "") {
+			bootbox.alert({
+				buttons: {
+					ok: {
+						label: 'OK',
+						className: 'bg text-light'
+					},
+				},
+				centerVertical: true,
+				title: "Erro ao validar horas",
+				onEscape: false,
+				message: "Favor cancelar a edição e abrir novamente"
+			});
+		}else{
+			//valida horas antes de editar
+			retorno = js_ApontarValidaHora(sup, dadosApont.event.extendedProps.ID_USUARIO, 'ger', dadosApont.event.id);
+			if (retorno == undefined) {
+				bootbox.alert({
+					buttons: {
+						ok: {
+							label: 'OK',
+							className: 'bg text-light'
+						},
+					},
+					centerVertical: true,
+					title: "Erro ao validar horas",
+					onEscape: false,
+					message: "Favor cancelar a edição e abrir novamente"
+				});
+			}else{
+				var retornoJSON = JSON.parse(retorno.responseText);	
+				if (retornoJSON && retornoJSON[0]["TOTAL"] == 0) {
+					js_enviaEditApont(botaoEditar, dadosApont.event.id, dadosApont.event.extendedProps.ID_USUARIO, sup);	
+				}
+			}				
+		}	
+		
+	});
+	$('#' + botaoAprovar.id).on('click', function (element) {	
+		//valida horas antes de editar
+		retorno = js_ApontarValidaHora(sup, dadosApont.event.extendedProps.ID_USUARIO, 'ger', dadosApont.event.id);
+		var retornoJSON = JSON.parse(retorno.responseText);	
+		if (retornoJSON && retornoJSON[0]["TOTAL"] == 0) {
+			js_enviaEditApont(botaoAprovar, dadosApont.event.id, dadosApont.event.extendedProps.ID_USUARIO, sup);
+		}
+	});
+
+//refatorar
+	if (editarDisplay !== 'none') {
+		interna_addEventosIniciaisEdit();		
+		//seleciona a opção do banco de dados
+		// $('#selParte').on('refreshed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+		// 	$("#selParte").selectpicker('val', selParte);			
+		// 	js_recuperaDadosParteAtiv(document.getElementById("selAtiv"), selParte);//carrega as opções do select			
+		// });
+		// $('#selAtiv').on('refreshed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+		// 	$("#selAtiv").selectpicker('val', selAtiv);
+		// });
+
+		$("#selParte option").remove();//remove nomes anteriores
+		$("#selParte").append("<option value='"+selParte+"'>"+selParteDesc+"</option>");				
+		$("#selParte").selectpicker('refresh');
+		$('#selParte').selectpicker('val', selParte);
+		$("#selAtiv option").remove();//remove nomes anteriores
+		$("#selAtiv").append("<option value='"+selAtiv+"'>"+selAtivDesc+"</option>");				
+		$("#selAtiv").selectpicker('refresh');
+		$('#selAtiv').selectpicker('val', selAtiv);
+		//js_recuperaDadosParteAtiv(document.getElementById("selParte"), ""); //carrega as opções do select
+
+		$("#selCausaRetrabalho").selectpicker('val', selCausaRetrabalho);				
+		$("#selCausaRetrabalho").selectpicker('refresh');
+		
+	}else{
+		$("#selParte option").remove();//remove nomes anteriores
+		$("#selParte").append("<option value='"+selParte+"'>"+selParteDesc+"</option>");				
+		$("#selParte").selectpicker('refresh');
+		$('#selParte').selectpicker('val', selParte);
+		$("#selAtiv option").remove();//remove nomes anteriores
+		$("#selAtiv").append("<option value='"+selAtiv+"'>"+selAtivDesc+"</option>");				
+		$("#selAtiv").selectpicker('refresh');
+		$('#selAtiv').selectpicker('val', selAtiv);
+		$("#selCausaRetrabalho").selectpicker('val', selCausaRetrabalho);				
+		$("#selCausaRetrabalho").selectpicker('refresh');
+	}
+//refatorar
+
+	$('#divEditAprov').one('hidden.bs.modal', function (event) {//limpa os valores dos campos do modal
+		$("#selParte, #selAtiv, #selCausaRetrabalho").selectpicker('val', '');	
+		$('#selAtiv, #selParte, #selCausaRetrabalho').selectpicker('destroy');
+		$("#btnAprovar, #btnEditar, #inpNumOS, #selParte, #selAtiv, #selCausaRetrabalho").off(); //remove os eventos dos campos
+		
+		var camposEdit = document.querySelectorAll(".EDIT");
+
+		camposEdit.forEach(ele => {
+			ele.value = "";
+		});
+		if (divModal._element !== null) {
+			divModal.dispose();//limpa o valor dos campos ao ocultar
+		}		
+	  })
+
+}
+//Função para selecionar os apontamentos no grid
+function interna_selecionaAprovacao(evento) {
+
+	evento.el.classList.toggle('select'); //alterna a cor a linha
+	evento.event.setExtendedProp('CHECK', !evento.event.extendedProps.CHECK); //alterna o estado do check
+}
+
+//Função para aprovar/reprovar os apontamentos selecionados na tela
+function interna_executaAprovacao(acao) {
+	var eventos = global_calendario.getEvents();
+	var aptSel = [];
+	var modAprov, msgRetorno = "Sucesso";
+	acao = acao.value == 'APV'?'Aprovar': 'Reprovar';
+	eventos.forEach(element => {
+		if (element.extendedProps.CHECK == true) {
+			aptSel.push(element.id);
+		}
+	});
+
+	if (aptSel.length > 0) {
+		bootbox.confirm({
+			buttons: {
+				confirm: {
+					label: 'Confirmar',
+					className: 'bg text-light'
+				},
+				cancel: {
+					label: 'Cancelar'
+				}
+			},
+			centerVertical: true,
+			title: "Aprovar",
+			message: "Deseja "+ acao +" " + aptSel.length + " lançamento(s)?",
+			callback: function (result) {	
+				if (result) {//se confirmou a ação
+					var modalProcessando = bootbox.dialog({ 
+						message: '<div class="text-center"><i class="fa fa-spin fa-spinner"></i> Processando apontamentos... 0 de ' + aptSel.length + '</div>', 
+						closeButton: false,
+						size: 'large',
+						onEscape: false,
+						centerVertical: true 
+					}); 
+					modalProcessando.modal('show');//exibe "processando" na tela 
+
+					url = '/functions/json.php';
+					var totalExecutado = 0; 
+
+					aptSel.forEach(element => {//executa no banco todos os apontamentos selecionados						
+						return $.ajax({
+							url : url,
+							data : {"aprovaApontamento" :
+										{  "id": element,
+											"acao": acao == "Aprovar"?"A":"R"
+										}
+									},
+							type : "post",
+							success : function(data) {
+								totalExecutado ++; //atualiza contador
+								modalProcessando.find('.bootbox-body').html('<div class="text-center"><i class="fa fa-spin fa-spinner"></i> Processando apontamentos... ' + totalExecutado + ' de ' + aptSel.length + '</div>');
+								// if(data !== "true"){
+								// 	msgRetorno = "Erro " + element;
+								// };
+								//refatorar - está retornando o XML também
+								if (totalExecutado == aptSel.length) {
+									modalProcessando.modal('hide'); //oculta "processando" da tela									
+									interna_exibeResultado();
+								}								
+							}
+						});
+					});
+				}
+			}
+		});
+		function interna_exibeResultado(){ 
+			bootbox.alert({
+				buttons: {
+					ok: {
+						label: 'OK',
+						className: 'bg text-light'
+					},
+				},
+				centerVertical: true,
+				title: "Ação Concluída",
+				onEscape: false,
+				message: msgRetorno,
+				callback: function () {
+					js_pesquisaGerenciar(document.getElementById("inpDataFiltro").value.split('/').reverse().join('/'), document.getElementById('selNome').value, document.getElementById('selAcao').value, 1);
+				}
+			});
+		}
+	}else{
 		bootbox.alert({
 			buttons: {
 				ok: {
@@ -322,23 +596,76 @@ function funIniciaEditAprov(dadosApont, sup) {
 				},
 			},
 			centerVertical: true,
-			title: "Edição",
-			message: "Erro ao recuperar a seção do apontamento. Não será possível editar!",
+			title: "Apontamento",
+			message: "Nenhum apontamento selecionado para aprovar!",
 		})
-	} else if (!dadosApont.event.extendedProps.STATUS && dadosApont.event.extendedProps.STATUS == 'P') { //apontamento pendente permite edição		
-		if (sup) {//habilita botão de aprovação
-			
-		}
-	}else{//apontamento aprovado ou reprovado
-		
 	}
-	
-
-	divModal.show();
 }
 
 //Função para incluir os botões de aprovação na tela view->gerenciar.php
-function interna_aprova() {
-	document.getElementById("divSecaoInd").innerHTML = '<div class="mt-2"><input type="radio" class="btn-check" name="aprov" id="aprovar" autocomplete="off" checked><label class="btn btn-outline-success" for="aprovar">Aprovar</label><input type="radio" class="btn-check" name="aprov" id="reprovar" autocomplete="off"><label class="btn btn-outline-danger" for="reprovar">Reprovar</label></div>';
+function interna_botaoAprova() {
+	document.getElementById("divSecaoInd").innerHTML = '<div class="mt-2"><div class="form-check form-check-inline"><input class="form-check-input aprovar" type="radio" name="radioExecutar" id="radAprov" value="APV" checked><label class="form-check-label" for="radAprov">Aprovar</label></div><div class="form-check form-check-inline"><input class="form-check-input reprovar" type="radio" name="radioExecutar" id="radReprov" value="REP"><label class="form-check-label" for="radReprov">Reprovar</label></div><button type="button" name="aprovExecutar" id="aprovExecutar" class="btn bg text-light">Executar</button>';	
+	$("#aprovExecutar").on( "click", function() {
+		interna_executaAprovacao(document.querySelector('input[name="radioExecutar"]:checked')); 
+	  });
+	
+}
 
+function interna_addEventosIniciaisEdit(){
+	//preencher campos da OS
+	$('#inpNumOS').on('change', function (element) {		
+		js_tamanhoCampoOS(document.getElementById("inpNumOS"), "ger");
+		js_recuperaDadosOS(document.getElementById("inpNumOS"), "ger");
+	});	
+
+	//retornar as partes e atividades
+	$('#selParte, #selAtiv').on('shown.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+		js_recuperaDadosParteAtiv(this, $("#selParte").val());
+	});
+	$('#selParte').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) { 
+		$("#selAtiv option").remove();
+		$("#selAtiv").selectpicker("refresh");
+	});
+}
+
+//função para enviar o modal de edicao
+function js_enviaEditApont(botao, idApont, login, sup){
+	var url = '/functions/json.php', acao, valores={}, camposEnviar; 
+	var data = new Date();
+	document.getElementById(botao.id).disabled = true; //bloqueia o botão para não solicitar a edição mais de uma vez
+	
+	camposEnviar = document.querySelectorAll(".ENVIAR");
+	camposEnviar.forEach(ele => {
+		if (ele.type == "checkbox") {
+			ele.value = ele.checked == true?"S":"N";
+		}
+		Object.assign(valores, {[ele.id]:ele.value});
+	});
+	if (botao.id == "btnAprovar" && document.getElementById("inpDataInicio").value < data.toLocaleDateString()) {
+		acao = "E";
+		Object.assign(valores, {"VALIDA":"A"}); //aprovar
+	}else if (botao.id == "btnAprovar") {
+		acao = "A";
+		Object.assign(valores, {"VALIDA":"A"}); //aprovar
+	}else{
+		acao = "E";
+		Object.assign(valores, {"VALIDA":"M"}); //manter o status atual
+	}
+
+	return $.ajax({
+		url : url,
+		data : {"aprovaApontamento" :
+					{  "id": idApont,
+						"acao": acao,
+						"campos":valores
+					}
+				},
+		type : "post",
+		async: false,
+		complete: function(data) {
+			$("#divEditAprov").modal('hide'); 
+			document.getElementById(botao.id).disabled = false;	
+			js_pesquisaGerenciar(document.getElementById('inpDataFiltro').value.split('/').reverse().join('/'), document.getElementById('selNome').value,1, sup);						
+		}
+	});	
 }

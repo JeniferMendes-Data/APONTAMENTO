@@ -17,7 +17,8 @@ include_once $_SERVER["DOCUMENT_ROOT"].'/functions/global_functions.php';
             	    header("Location: ../index.php");
             	    die();
             	}else if(!isset($_GET["origem"]) && $_GET["origem"] == "login"){
-            	    echo include_modal("idRetornoLogin","Apontamento de Horas", "Bem-vindo ".$_SESSION['nomeUsuario']. "!", "sucesso");
+            	    //chama modal bootbox
+					echo "<script>$(document).ready(function(){bootbox.alert({buttons: {ok: {label: 'Fechar',className: 'bg text-light'},},centerVertical: true,title: 'Apontamento de Horas',message: 'Bem-vindo ".$_SESSION['nomeUsuario']."!'});})</script>"; 						
             	}
         		echo include_menu("Gerenciar","Gerenciar Apontamentos");
 
@@ -65,7 +66,7 @@ include_once $_SERVER["DOCUMENT_ROOT"].'/functions/global_functions.php';
 				</div>
 			</div>
 		</div>
-		<div class="modal fade" id="divEditAprov" tabindex="-1" aria-labelledby="lblEditAprov" aria-hidden="true">
+		<div class="modal fade" id="divEditAprov" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="lblEditAprov" aria-hidden="true">
 			<div class="modal-dialog">
 				<div class="modal-content">
 				<div class="modal-header">
@@ -75,63 +76,76 @@ include_once $_SERVER["DOCUMENT_ROOT"].'/functions/global_functions.php';
 				<div class="modal-body">
 					<form>
 					<div class="row mb-3">
-						<div>
-							<label for="inpSecao" class="col-sm-2 col-form-label col-form-label-sm">Seção:</label>
-							<div class="col-sm-12">
-								<input type="text" class="form-control col-form-label-sm" id="inpSecao" name="inpSecao" readOnly></input>
-							</div>
+						<label for="inpSecao" class="col-sm-1 col-form-label col-form-label-sm">Seção:</label>
+						<div class="col-sm-8">
+							<input type="text" class="form-control col-form-label-sm ENVIAR" id="inpSecao" name="inpSecao" readOnly></input>
 						</div>
 					</div>
 					<div class="row mb-3">
 						<label for="inpNumOS" class="col-sm-1 col-form-label col-form-label-sm">OS:</label>
-						<div class="col-sm-5">
-							<input type="text" class="form-control col-form-label-sm" id="inpNumOS" name="inpNumOS" readOnly></input>
+        				<div class="col-sm-5">
+							<div class="input-group">
+								<div class="input-group-append">
+									<button id="btnOSGenerica" type="button" class="input-group-text dropdown dropdown-toggle-split EDIT" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+										<span class="material-icons" data-bs-toggle="tooltip" data-bs-placement="top" title="OS Genérica">list</span>
+									</button>
+									<div id="dpdownOSGenerica" class="dropdown-menu" style="max-height: 200px; overflow-y: scroll;">
+										<!-- Preenchido dinamicamente-->
+									</div>
+								</div>
+								<input id="inpNumOS" name="inpNumOS" type="number" class="form-control col-form-label-sm EDIT ENVIAR" maxlength="6" required readOnly></input>
+							</div>				
 						</div>
-						<label for="inpDataApt" class="col-sm-1 col-form-label col-form-label-sm">Data:</label>
+						<label for="inpDataInicio" class="col-sm-1 col-form-label col-form-label-sm">Data:</label>
 						<div class="col-sm-5">
-							<input type="text" class="form-control col-form-label-sm" id="inpDataApt" name="inpDataApt" readOnly></input>
+							<input type="text" class="form-control col-form-label-sm ENVIAR" id="inpDataInicio" name="inpDataInicio" readOnly></input>
 						</div>
 					</div>
 					<div class="row mb-3 align-items-center">
-						<label for="inpHraIni" class="col-sm-1 col-form-label col-form-label-sm">Hora Início:</label>
+						<label for="inpHoraInicio" class="col-sm-1 col-form-label col-form-label-sm">Hora Início:</label>
 						<div class="col-sm-5">
-							<input type="text" class="form-control col-form-label-sm" id="inpHraIni" name="inpHraIni" readOnly></input>
+							<input type="time" class="form-control col-form-label-sm EDIT ENVIAR" id="inpHoraInicio" name="inpHoraInicio" required readOnly></input>
 						</div>
-						<label for="inpHraFim" class="col-sm-1 col-form-label col-form-label-sm">Hora Fim:</label>
+						<label for="inpHoraFim" class="col-sm-1 col-form-label col-form-label-sm">Hora Fim:</label>
 						<div class="col-sm-5">
-							<input type="text" class="form-control col-form-label-sm" id="inpHraFim" name="inpHraFim" readOnly></input>
+							<input type="time" class="form-control col-form-label-sm EDIT ENVIAR" id="inpHoraFim" name="inpHoraFim" required readOnly></input>
 						</div>
 					</div>
 					<div class="row mb-3 align-items-center">                       
 						<label for="selParte" class="col-sm-2 col-form-label col-form-label-sm">Partes/Peças:</label>
 						<div class="col-sm-10">
-							<select id="selParte" name="selParte" class="selectpicker form-control border" data-live-search="true" title="Selecionar Parte/Peça" data-style="btn" disabled></select>
+							<select id="selParte" name="selParte" class="form-control border EDIT ENVIAR" data-live-search="true" title="Selecionar Parte/Peça" data-style="btn" required disabled></select>
 						</div>
 					</div>
 					<div class="row mb-3 align-items-center">
 						<label for="selAtiv" class="col-sm-2 col-form-label col-form-label-sm">Atividade:</label>
 						<div class="col-sm-10">
-							<select id="selAtiv" name="selAtiv" class="selectpicker form-control border" data-live-search="true" title="Selecionar Atividade" data-style="btn" disabled></select>
+							<select id="selAtiv" name="selAtiv" class="form-control border EDIT ENVIAR" data-live-search="true" title="Selecionar Atividade" data-style="btn" required disabled></select>
 						</div>
 					</div>
 					<div class="row mb-3 align-items-center">
 						<label for="selCausaRetrabalho" class="col-sm-2 col-form-label col-form-label-sm">Retrabalho:</label>
 						<div class="col-sm-10">
-							<select id="selCausaRetrabalho" name="selCausaRetrabalho" class="selectpicker form-control border" data-live-search="true" title="Selecionar Causa do Retrabalho" data-style="btn" disabled></select>
+							<select id="selCausaRetrabalho" name="selCausaRetrabalho" class="form-control border EDIT ENVIAR" data-live-search="true" title="Selecionar Causa do Retrabalho" data-style="btn" required disabled></select>
 						</div>
 					</div>
 					<div class="row mb-3 align-items-center">						
 						<div class="col-sm-1">
-							<input id="inpServCampo" name="inpServCampo" type="checkbox" class="form-check-input-inline mr-1" disabled></input>
+							<input id="inpServCampo" name="inpServCampo" type="checkbox" class="form-check-input-inline mr-1 EDIT ENVIAR"  required disabled></input>
 						</div>
 						<label for="inpServCampo" class="col-sm-11 col-form-label col-form-label-sm">Serviço de Campo</label>
+					</div>
+					<div class="row mb-3">
+						<div class="col-sm-12">
+							<textarea placeholder="Observação" id="inpObs" name="inpObs" cols=30 rows="3" class="form-control EDIT ENVIAR" maxlength="254"></textarea>
+						</div>
 					</div>
 					</form>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-					<button type="button" class="btn btn-primary">Send message</button>
-				</div>
+					<button type="button" class="btn btn-success" id="btnAprovar" style="display:none;">Aprovar</button>										
+					<button type="button" class="btn btn-primary" id="btnEditar" style="display:none;">Salvar</button>	
+					<button type="button" class="btn btn-secondary" id="btnFechar" data-bs-dismiss="modal"></button>					
 				</div>
 			</div>
 		</div>
@@ -139,23 +153,26 @@ include_once $_SERVER["DOCUMENT_ROOT"].'/functions/global_functions.php';
 	<script>
 		$(document).ready(function(){
 			$('#divCarregando').show(); //exibe gif de carregamento no calendário
+			//retornar as OS's genéricas
+			document.getElementById('dpdownOSGenerica').innerHTML = '<?php echo include_itemOSGenerica("ger"); ?>';
+			
+			//retorna as causas do retrabalho
+			document.getElementById('selCausaRetrabalho').innerHTML = '<?php echo include_causaRetrabalho(); ?>';
+			$("#selCausaRetrabalho").selectpicker("refresh");
+
 			//verifica se colaborador pode aprovar
 			var sup = <?php if (isset($_SESSION["APV"])){ echo $_SESSION["APV"];}else{ echo 0;} ?>;
 			funIniciaTimeGrid(sup);
 			$("#inpDataFiltro").datepicker();
 			var minDate = (<?php $config = new Config(); echo $config->diaApontRetroativo; ?> == true);
-			js_DataApontRetroativo(minDate); //define minDate no calendário			
+			js_DataApontRetroativo(minDate, <?php echo $_SESSION["APT_RET"]; ?>); //define minDate no calendário			
 			$("#inpDataFiltro").datepicker("setDate", new Date().toLocaleDateString('en-ZA'));
 			
 			//libera a seleção de nomes
 			(sup == true)?
 				js_recuperaNomeIDSup(document.getElementById("selNome")):
 				js_pesquisaGerenciar(new Date().toLocaleDateString('en-ZA'), document.getElementById("selNome").value,document.getElementById("selAcao").value, false);
-			
-			//retorna as causas do retrabalho
-            document.getElementById('selCausaRetrabalho').innerHTML = '<?php echo include_causaRetrabalho(); ?>';
-			$("#selCausaRetrabalho").selectpicker("refresh");
-			
+						
 			//chama função no js que carrega os campos conforme permissão selecionada via PHP
     		<?php
     		  echo ($readyPermissoes);
