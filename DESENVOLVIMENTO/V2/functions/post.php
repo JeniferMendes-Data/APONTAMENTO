@@ -310,10 +310,11 @@ function interna_enviaRM($campos) {
     $config = new Config();
     $enderecoConexao = $config->enderecoSOAP;
     $enderecoConexao .= "wsDataServer/MEX?wsdl";
+    $coligada = $campos["CODCOLIGADA"];
 
 
     $soap = new SoapClient($config->enderecoSOAP."wsDataServer/MEX?wsdl", array("login"=>$config->usuarioIntegracaoRM, "password"=>$config->senhaIntegracaoRM, "trace"=>1));
-    $params = array("DataServerName" => "MovMovimentoTBCData", "XML" => $xmlEnvioRM->asXML(), "Contexto" => "CODCOLIGADA=$config->coligada;CODUSUARIO=$config->usuarioIntegracaoRM;CODSISTEMA=T");
+    $params = array("DataServerName" => "MovMovimentoTBCData", "XML" => $xmlEnvioRM->asXML(), "Contexto" => "CODCOLIGADA=$coligada;CODUSUARIO=$config->usuarioIntegracaoRM;CODSISTEMA=T");
     //refatorar
     $result = $soap->__soapCall("SaveRecord", array("SaveRecord" => $params));
     $retornoS = $soap->__getLastResponse();
