@@ -13,14 +13,17 @@ function include_head($titulo){
                 <meta charset="utf-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1">
                 <link rel="stylesheet" href="http://'.$_SERVER["HTTP_HOST"].'/_utilitaries/css/bootstrap-select.css">
-                <link rel="stylesheet" href="http://'.$_SERVER["HTTP_HOST"].'/_utilitaries/css/bootstrap.min.css">
+                <link rel="stylesheet" href="http://'.$_SERVER["HTTP_HOST"].'/_utilitaries/css/bootstrap-datepicker.css">
+                <link rel="stylesheet" href="http://'.$_SERVER["HTTP_HOST"].'/_utilitaries/css/bootstrap.min.css">                
                 <link rel="stylesheet" href="http://'.$_SERVER["HTTP_HOST"].'/_utilitaries/css/custom_style.css">
                 <link rel="stylesheet" href="http://'.$_SERVER["HTTP_HOST"].'/_utilitaries/css/jquery-ui.min.css">
                 <link rel="stylesheet" href="http://'.$_SERVER["HTTP_HOST"].'/_utilitaries/css/fullCalendar-main.min.css">
                 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
                 <script src="http://'.$_SERVER["HTTP_HOST"].'/_utilitaries/js/jquery-3.6.0.min.js"></script>
                 <script src="http://'.$_SERVER["HTTP_HOST"].'/_utilitaries/js/jquery-ui.min.js"></script>
-                <script src="http://'.$_SERVER["HTTP_HOST"].'/_utilitaries/js/datepicker-pt-BR.js"></script>
+                <script src="http://'.$_SERVER["HTTP_HOST"].'/_utilitaries/js/jquery.inputmask.min.js"></script>
+                <script src="http://'.$_SERVER["HTTP_HOST"].'/_utilitaries/js/bootstrap-datepicker.min.js"></script>
+                <script src="http://'.$_SERVER["HTTP_HOST"].'/_utilitaries/js/bootstrap-datepicker.pt-BR.min.js"></script>
                 <script src="http://'.$_SERVER["HTTP_HOST"].'/_utilitaries/js/bootstrap.bundle.min.js"></script>
                 <script src="http://'.$_SERVER["HTTP_HOST"].'/_utilitaries/js/bootstrap-select.min.js"></script>
                 <script src="http://'.$_SERVER["HTTP_HOST"].'/_utilitaries/js/bootbox.min.js"></script>
@@ -93,6 +96,16 @@ function include_itemOSGenerica($origem = "") {
             $onclick = "js_apontarSelecionaItem(\'".$numOS."\',\'".$row['TMOVCOMPL_DESCRICAOCOMP']."\',\'".$row['GFILIAL_CIDADE']."\',\'".$row['GCCUSTO_NOME']."\',\'ger\')";
         }
         $retorno .= "<a class=\"dropdown-item\" onclick=\"".$onclick."\">".$numOS."-".$row['TMOVCOMPL_DESCRICAOCOMP']."</a>";
+    }
+    return $retorno;
+}
+
+//Função para retornar a lista de Horas e minutos views -> apontar.php
+function include_itemHraEMin($tipo) {
+    $lista = new Config();
+    $listaArray = explode(',',($tipo == "hora")?$lista->listHrs:$lista->listMin);
+    foreach ($listaArray as $row){
+        $retorno .= "<option value='$row'>$row</option>";
     }
     return $retorno;
 }

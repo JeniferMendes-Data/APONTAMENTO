@@ -56,22 +56,22 @@ include_once $_SERVER["DOCUMENT_ROOT"].'/_utilitaries/config.php';
         			</div>
         		</div>
         		<div id="dadosLanc" class="row">
-        			<div class="col-md-2">
+        			<div class="col-md-3">
         				<label for="inpDataInicio">Data Início:</label>
         				<input type="text" class="form-control APV" id="inpDataInicio" name="inpDataInicio" autocomplete="off" readOnly required></input>
         			</div>
-        			<div class="col-md-4">
-        				<label for="inpHoraInicio">Hora Início:</label>
-        				<input id="inpHoraInicio" name="inpHoraInicio" type="time" min="00:00" max="23:59" class="form-control APT APV" readOnly onblur="js_ApontarValidaHora('<?php if (isset($_SESSION['APV'])){ echo $_SESSION['APV'];}else{ echo 0;} ?>', '<?php echo $_SESSION['usuarioLogado'];?>')" required></input>
+        			<div class="col-md-3">						
+						<label for="inpHoraInicio">Hora Início:</label>
+						<input id="inpHoraInicio" name="inpHoraInicio" class="form-control border APT APV" title = "Hora" data-style="btn" readOnly required></input>
         			</div>
-        			<div class="col-md-2">
+        			<div class="col-md-3">
         				<label for="inpDataFim">Data Fim:</label>
         				<input type="text" class="form-control" id="inpDataFim" name="inpDataFim" readOnly></input>
         			</div>
-        			<div class="col-md-4">
-        				<label for="inpHoraFim">Hora Fim:</label>
-        				<input id="inpHoraFim" name="inpHoraFim" type="time" min="00:00" max="23:59" class="form-control APT APV" onblur="js_ApontarValidaHora('<?php if (isset($_SESSION['APV'])){ echo $_SESSION['APV'];}else{ echo 0;} ?>', '<?php echo $_SESSION['usuarioLogado'];?>')" required readOnly></input>
-        			</div>
+        			<div class="col-md-3">						
+						<label for="inpHoraFim">Hora Fim:</label>
+						<input id="inpHoraFim" name="inpHoraFim" class="form-control border APT APV" type="text" readOnly required></input>					
+					</div>
         		</div>
         		<div id="dadosOS" class="row">
         			<div class="col-md-3">
@@ -152,16 +152,24 @@ include_once $_SERVER["DOCUMENT_ROOT"].'/_utilitaries/config.php';
 			$('#selSecaoDesc').selectpicker(); 
 			$('#selNome').selectpicker();
 
+			//inicializa os campos de hora
+			$("#inpHoraFim, #inpHoraInicio").inputmask({placeholder:"--:--", clearMaskOnLostFocus:false, mask:"23:59", definitions: {'2': {validator: "[0-2]"}, '3': {validator: "[0-3]"}, '5': {validator: "[0-5]"}, '9': {validator: "[0-9]"}}});
+
 			if(<?php if (isset($_SESSION["APV"])){ echo $_SESSION["APV"];}else{ echo 0;} ?> == true){ //verifica se colaborador pode aprovar
 
 				//inicializa calendário em campos de datas
-				var minDate = (<?php $config = new Config(); echo $config->diaApontRetroativo; ?> == true);
-    			js_DataApontRetroativo(minDate, <?php echo $_SESSION["APT_RET"]; ?>); //define minDate no calendário
+				// var minDate = (<?php $config = new Config(); echo $config->diaApontRetroativo; ?> == true);
+    			// js_DataApontRetroativo(minDate, <?php echo $_SESSION["APT_RET"]; ?>); //define minDate no calendário
 
 				$("#inpDataInicio").datepicker({
-					onSelect: function(value, date){
-                    	js_ApontarValidaHora('<?php if (isset($_SESSION["APV"])){ echo $_SESSION["APV"];}else{ echo 0;}  ?>', '<?php echo $_SESSION['usuarioLogado'];?>', document.getElementById('inpDataInicio'));
-                    }
+					// onSelect: function(value, date){
+                    // 	js_ApontarValidaHora('<?php if (isset($_SESSION["APV"])){ echo $_SESSION["APV"];}else{ echo 0;}  ?>', '<?php echo $_SESSION['usuarioLogado'];?>', document.getElementById('inpDataInicio'));
+                    // }
+					format: 'dd/mm/yyyy',
+    				startDate: '01/08/2022',
+					language: 'pt-BR',
+					endDate: Date(),
+					todayHighlight: true
                 }); 
 				
 				//carrega seções para supervisor
@@ -169,7 +177,7 @@ include_once $_SERVER["DOCUMENT_ROOT"].'/_utilitaries/config.php';
 					js_recuperaSecaoSup(this, '<?php echo $_SESSION['usuarioLogado'];?>');
 				}); 
 			}
-			js_addEventosIniciais();
+			// js_addEventosIniciais();
 			
 			//retorna as causas do retrabalho
 			document.getElementById('selCausaRetrabalho').innerHTML = '<?php echo include_causaRetrabalho(); ?>';

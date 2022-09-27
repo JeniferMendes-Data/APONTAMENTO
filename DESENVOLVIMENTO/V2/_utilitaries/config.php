@@ -13,6 +13,7 @@ class Config{
     public $OSBloqueada;
     public $StatusOSAtv;
 
+
     //construtor da classe
     function __construct(){
         $this->valorConfig();

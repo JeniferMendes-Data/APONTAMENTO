@@ -163,15 +163,15 @@ include_once $_SERVER["DOCUMENT_ROOT"].'/functions/global_functions.php';
 			//verifica se colaborador pode aprovar
 			var sup = <?php if (isset($_SESSION["APV"])){ echo $_SESSION["APV"];}else{ echo 0;} ?>;
 			funIniciaTimeGrid(sup);
-			$("#inpDataFiltro").datepicker();
-			var minDate = (<?php $config = new Config(); echo $config->diaApontRetroativo; ?> == true);
-			js_DataApontRetroativo(minDate, <?php echo $_SESSION["APT_RET"]; ?>); //define minDate no calendário			
-			$("#inpDataFiltro").datepicker("setDate", new Date().toLocaleDateString('en-ZA'));
+			// $("#inpDataFiltro").datepicker();
+			// var minDate = (<?php $config = new Config(); echo $config->diaApontRetroativo; ?> == true);
+			// js_DataApontRetroativo(minDate, <?php echo $_SESSION["APT_RET"]; ?>); //define minDate no calendário			
+			// $("#inpDataFiltro").datepicker("setDate", new Date().toLocaleDateString('en-ZA'));
 			
 			//libera a seleção de nomes
-			(sup == true)?
-				js_recuperaNomeIDSup(document.getElementById("selNome")):
-				js_pesquisaGerenciar(new Date().toLocaleDateString('en-ZA'), document.getElementById("selNome").value,document.getElementById("selAcao").value, false);
+			// (sup == true)?
+			// 	js_recuperaNomeIDSup(document.getElementById("selNome")):
+			// 	js_pesquisaGerenciar(new Date().toLocaleDateString('en-ZA'), document.getElementById("selNome").value,document.getElementById("selAcao").value, false);
 						
 			//chama função no js que carrega os campos conforme permissão selecionada via PHP
     		<?php

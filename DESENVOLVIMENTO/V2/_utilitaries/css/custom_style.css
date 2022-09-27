@@ -57,3 +57,13 @@ button.bg:hover{
 	height:100%;
 	z-index:-1;
 }
+
+.datepicker td,th{
+    text-align: center;
+    padding: 6px 10px;
+    font-size: 14px;
+}
+
+.datepicker-switch{
+	font-size: 18px;
+}
