@@ -62,7 +62,7 @@ include_once $_SERVER["DOCUMENT_ROOT"].'/_utilitaries/config.php';
         			</div>
         			<div class="col-md-3">						
 						<label for="inpHoraInicio">Hora Início:</label>
-						<input id="inpHoraInicio" name="inpHoraInicio" class="form-control border APT APV" title = "Hora" data-style="btn" readOnly required></input>
+						<input id="inpHoraInicio" name="inpHoraInicio" class="form-control APT APV" type="text" onblur="js_ApontarValidaHora('<?php if (isset($_SESSION['APV'])){ echo $_SESSION['APV'];}else{ echo 0;} ?>', '<?php echo $_SESSION['usuarioLogado'];?>')" readOnly required></input>
         			</div>
         			<div class="col-md-3">
         				<label for="inpDataFim">Data Fim:</label>
@@ -70,7 +70,7 @@ include_once $_SERVER["DOCUMENT_ROOT"].'/_utilitaries/config.php';
         			</div>
         			<div class="col-md-3">						
 						<label for="inpHoraFim">Hora Fim:</label>
-						<input id="inpHoraFim" name="inpHoraFim" class="form-control border APT APV" type="text" readOnly required></input>					
+						<input id="inpHoraFim" name="inpHoraFim" class="form-control APT APV" type="text" onblur="js_ApontarValidaHora('<?php if (isset($_SESSION['APV'])){ echo $_SESSION['APV'];}else{ echo 0;} ?>', '<?php echo $_SESSION['usuarioLogado'];?>')" readOnly required></input>					
 					</div>
         		</div>
         		<div id="dadosOS" class="row">
@@ -153,31 +153,32 @@ include_once $_SERVER["DOCUMENT_ROOT"].'/_utilitaries/config.php';
 			$('#selNome').selectpicker();
 
 			//inicializa os campos de hora
-			$("#inpHoraFim, #inpHoraInicio").inputmask({placeholder:"--:--", clearMaskOnLostFocus:false, mask:"23:59", definitions: {'2': {validator: "[0-2]"}, '3': {validator: "[0-3]"}, '5': {validator: "[0-5]"}, '9': {validator: "[0-9]"}}});
+			$("#inpHoraFim, #inpHoraInicio").inputmask("datetime",{placeholder:"--:--", clearMaskOnLostFocus:false, inputFormat: "HH:MM", autoUnmask: true});
 
 			if(<?php if (isset($_SESSION["APV"])){ echo $_SESSION["APV"];}else{ echo 0;} ?> == true){ //verifica se colaborador pode aprovar
 
 				//inicializa calendário em campos de datas
-				// var minDate = (<?php $config = new Config(); echo $config->diaApontRetroativo; ?> == true);
-    			// js_DataApontRetroativo(minDate, <?php echo $_SESSION["APT_RET"]; ?>); //define minDate no calendário
+				var minDate = js_DataApontRetroativo((<?php $config = new Config(); echo $config->diaApontRetroativo; ?> == true), <?php echo $_SESSION["APT_RET"]; ?>); //define o menor dia disponível para apontamento
 
 				$("#inpDataInicio").datepicker({
-					// onSelect: function(value, date){
-                    // 	js_ApontarValidaHora('<?php if (isset($_SESSION["APV"])){ echo $_SESSION["APV"];}else{ echo 0;}  ?>', '<?php echo $_SESSION['usuarioLogado'];?>', document.getElementById('inpDataInicio'));
-                    // }
 					format: 'dd/mm/yyyy',
-    				startDate: '01/08/2022',
+    				startDate: minDate,
 					language: 'pt-BR',
 					endDate: Date(),
-					todayHighlight: true
+					todayHighlight: true,
+					autoclose: true
                 }); 
+
+				$("#inpDataInicio").on('changeDate', function(){
+                    	js_ApontarValidaHora('<?php if (isset($_SESSION["APV"])){ echo $_SESSION["APV"];}else{ echo 0;}  ?>', '<?php echo $_SESSION['usuarioLogado'];?>', document.getElementById('inpDataInicio'));
+                    })
 				
 				//carrega seções para supervisor
 				$('#selSecaoDesc').on('loaded.bs.select', function (e, clickedIndex, isSelected, previousValue) {
 					js_recuperaSecaoSup(this, '<?php echo $_SESSION['usuarioLogado'];?>');
 				}); 
 			}
-			// js_addEventosIniciais();
+			js_addEventosIniciais();
 			
 			//retorna as causas do retrabalho
 			document.getElementById('selCausaRetrabalho').innerHTML = '<?php echo include_causaRetrabalho(); ?>';

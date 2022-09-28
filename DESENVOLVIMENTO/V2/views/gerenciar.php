@@ -58,7 +58,7 @@ include_once $_SERVER["DOCUMENT_ROOT"].'/functions/global_functions.php';
 				</div>
 			</div>
 			<div id="calendario">
-				<div class="mt-2" id="divApontTime">		
+				<div class="mt-2 mb-5" id="divApontTime">		
 					<!-- preenchido dinâmicamente-->	  
 				</div>
 				<div id="divCarregando" style="display:none;">
@@ -104,11 +104,11 @@ include_once $_SERVER["DOCUMENT_ROOT"].'/functions/global_functions.php';
 					<div class="row mb-3 align-items-center">
 						<label for="inpHoraInicio" class="col-sm-1 col-form-label col-form-label-sm">Hora Início:</label>
 						<div class="col-sm-5">
-							<input type="time" class="form-control col-form-label-sm EDIT ENVIAR" id="inpHoraInicio" name="inpHoraInicio" required readOnly></input>
+							<input type="text" class="form-control col-form-label-sm EDIT ENVIAR" id="inpHoraInicio" name="inpHoraInicio" required readOnly></input>
 						</div>
 						<label for="inpHoraFim" class="col-sm-1 col-form-label col-form-label-sm">Hora Fim:</label>
 						<div class="col-sm-5">
-							<input type="time" class="form-control col-form-label-sm EDIT ENVIAR" id="inpHoraFim" name="inpHoraFim" required readOnly></input>
+							<input type="text" class="form-control col-form-label-sm EDIT ENVIAR" id="inpHoraFim" name="inpHoraFim" required readOnly></input>
 						</div>
 					</div>
 					<div class="row mb-3 align-items-center">                       
@@ -163,15 +163,27 @@ include_once $_SERVER["DOCUMENT_ROOT"].'/functions/global_functions.php';
 			//verifica se colaborador pode aprovar
 			var sup = <?php if (isset($_SESSION["APV"])){ echo $_SESSION["APV"];}else{ echo 0;} ?>;
 			funIniciaTimeGrid(sup);
-			// $("#inpDataFiltro").datepicker();
-			// var minDate = (<?php $config = new Config(); echo $config->diaApontRetroativo; ?> == true);
-			// js_DataApontRetroativo(minDate, <?php echo $_SESSION["APT_RET"]; ?>); //define minDate no calendário			
-			// $("#inpDataFiltro").datepicker("setDate", new Date().toLocaleDateString('en-ZA'));
 			
+			//inicializa os campos de hora
+			$("#inpHoraFim, #inpHoraInicio").inputmask("datetime",{placeholder:"--:--", clearMaskOnLostFocus:false, inputFormat: "HH:MM"});
+
+			var minDate = js_DataApontRetroativo((<?php $config = new Config(); echo $config->diaApontRetroativo; ?> == true), <?php echo $_SESSION["APT_RET"]; ?>); //define minDate no calendário			
+			
+			$("#inpDataFiltro").datepicker({
+					format: 'dd/mm/yyyy',
+    				startDate: minDate,
+					language: 'pt-BR',
+					endDate: Date(),
+					todayHighlight: true,
+					autoclose: true
+            }); 			
+			
+			$('#inpDataFiltro').datepicker('update', Date());
+
 			//libera a seleção de nomes
-			// (sup == true)?
-			// 	js_recuperaNomeIDSup(document.getElementById("selNome")):
-			// 	js_pesquisaGerenciar(new Date().toLocaleDateString('en-ZA'), document.getElementById("selNome").value,document.getElementById("selAcao").value, false);
+			 (sup == true)?
+			 	js_recuperaNomeIDSup(document.getElementById("selNome")):
+			 	js_pesquisaGerenciar(new Date().toLocaleDateString('en-ZA'), document.getElementById("selNome").value,document.getElementById("selAcao").value, false);
 						
 			//chama função no js que carrega os campos conforme permissão selecionada via PHP
     		<?php

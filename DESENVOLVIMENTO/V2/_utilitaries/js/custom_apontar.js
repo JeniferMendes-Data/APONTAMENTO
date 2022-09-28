@@ -143,7 +143,7 @@ function js_tamanhoCampoOS(campo, origem = ""){
 			},
 			centerVertical: true,
 		    title: "Apontamento Inválido",
-		    message: "Número de OS inválido!",
+		    message: "Número de OS inválido!"
 		});
 	}
 }
@@ -159,6 +159,7 @@ function js_recuperaDadosOS(campoOS, origem = ""){
 						}
 					},
 			type : "post",
+			async: false,
 			success : function(data) {
 				var retorno = JSON.parse(data);				
 				if (retorno == null) {
@@ -192,7 +193,7 @@ function js_recuperaDadosOS(campoOS, origem = ""){
 						centerVertical: true,
 						title: "Editar",
 						message: "Deseja Alterar para a OS " + campoOS.value + ": " + retorno[0]["TMOVCOMPL_DESCRICAOCOMP"],
-						callback: function (acao) {
+						callback: function (acao) {							
 							if (!acao) {
 								campoOS.value = campoOS.defaultValue;
 							}

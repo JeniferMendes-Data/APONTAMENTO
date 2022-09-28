@@ -35,7 +35,6 @@ function js_exibeCampos(classe_permissao, display = "", readOnly = "") {
 
 //carrega calendario datepicker com a regra de data mínima para apontamento
 function js_DataApontRetroativo(data, permissao) {
-	$.datepicker.setDefaults($.datepicker.regional["pt-BR"]);
 	var dataAtual = new Date();
 	var dataCalendario;	
 	
@@ -47,9 +46,5 @@ function js_DataApontRetroativo(data, permissao) {
 		dataCalendario = new Date(dataAtual.getFullYear(), dataAtual.getMonth(), 1);
 	}
 	
-	$.datepicker.setDefaults({
-		format:"dd/mm/yyyy",
-		maxDate: new Date(),
-		minDate: new Date(dataCalendario)
-	});
+	return dataCalendario;
 }

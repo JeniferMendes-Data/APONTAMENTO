@@ -33,7 +33,7 @@ include_once $_SERVER["DOCUMENT_ROOT"].'/functions/global_functions.php';
     	<script language= "JavaScript">$(document).ready(function(){ $("#idRetornoLogin").modal("show"); });</script>
     	<div class="container mt-5">
             <div class="row">
-            	<div class="col-md-6 text-center">
+            	<div class="col-md-6 text-center mb-3">
                 	<a href="apontar.php" class="bg px-5 text-light btn">Apontar</a>
                 </div>
                 <div class="col-md-6 text-center">

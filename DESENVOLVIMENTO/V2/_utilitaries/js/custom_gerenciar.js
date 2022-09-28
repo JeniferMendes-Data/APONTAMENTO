@@ -325,9 +325,7 @@ function interna_editApont(dadosApont, sup) {
 	campos.inpNumOS.value = !dadosApont.event.extendedProps.OS?"Não informado":dadosApont.event.extendedProps.OS.substring(dadosApont.event.extendedProps.OS.length -6);
 	campos.inpDataApt.value = new Date(dadosApont.event.extendedProps.H_INICIO.date).toLocaleDateString('en-GB');
 	campos.inpHoraInicio.value = new Date(dadosApont.event.extendedProps.H_INICIO.date).toLocaleTimeString();
-	campos.inpHoraInicio.value = campos.inpHoraInicio.value.slice(0,-3); //mantem time no padrão H:i
 	campos.inpHoraFim.value = new Date(dadosApont.event.extendedProps.H_FIM.date).toLocaleTimeString();
-	campos.inpHoraFim.value = campos.inpHoraFim.value.slice(0,-3); //mantem time no padrão H:i
 	selParte = !dadosApont.event.extendedProps.PARTE?"Não informado":dadosApont.event.extendedProps.PARTE;
 	selAtiv = !dadosApont.event.extendedProps.ATIVIDADE?"Não informado":dadosApont.event.extendedProps.ATIVIDADE;
 	selParteDesc = !dadosApont.event.extendedProps.PARTEDESC?"Não informado":dadosApont.event.extendedProps.PARTEDESC;
@@ -613,7 +611,7 @@ function interna_botaoAprova() {
 
 function interna_addEventosIniciaisEdit(){
 	//preencher campos da OS
-	$('#inpNumOS').on('change', function (element) {		
+	$('#inpNumOS').on('change', function (element) {
 		js_tamanhoCampoOS(document.getElementById("inpNumOS"), "ger");
 		js_recuperaDadosOS(document.getElementById("inpNumOS"), "ger");
 	});	
