@@ -21,8 +21,8 @@ include_once $_SERVER["DOCUMENT_ROOT"].'/functions/global_functions.php';
         	    die();
         	}else if(isset($_SESSION["origem"]) && $_SESSION["origem"] == "login"){
         	    unset($_SESSION["origem"]);
-        	    //mensagem de boas-vindas
-        	    echo include_modal("idRetornoLogin","Apontamento de Horas", "Bem-vindo ".$_SESSION['nomeUsuario']. "!", "sucesso");
+				//chama modal bootbox
+				echo "<script>$(document).ready(function(){bootbox.alert({buttons: {ok: {label: 'Fechar',className: 'bg text-light'},},centerVertical: true,title: 'Apontamento de Horas',message: 'Bem-vindo ".$_SESSION['nomeUsuario']."!'});})</script>"; 						
         	}
     		//verifica permissões do usuário
 			$readyPermissoes = "";
@@ -33,7 +33,7 @@ include_once $_SERVER["DOCUMENT_ROOT"].'/functions/global_functions.php';
     	<script language= "JavaScript">$(document).ready(function(){ $("#idRetornoLogin").modal("show"); });</script>
     	<div class="container mt-5">
             <div class="row">
-            	<div class="col-md-6 text-center">
+            	<div class="col-md-6 text-center mb-3">
                 	<a href="apontar.php" class="bg px-5 text-light btn">Apontar</a>
                 </div>
                 <div class="col-md-6 text-center">

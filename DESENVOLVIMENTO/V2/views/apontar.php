@@ -27,14 +27,12 @@ include_once $_SERVER["DOCUMENT_ROOT"].'/_utilitaries/config.php';
         		if (isset($_SESSION["msg"])) {
         		    $mensagem = $_SESSION["msg"];
         		    unset($_SESSION["msg"]);
-        		    //mensagem de erro/sucesso
-        		    echo include_modal("idRetornoApontar","Apontamento de Horas", $mensagem, "info");
+        		    //mensagem de erro/sucesso chama modal bootbox
+					echo "<script>$(document).ready(function(){bootbox.alert({buttons: {ok: {label: 'Fechar',className: 'bg text-light'},},centerVertical: true,title: 'Apontamento de Horas',message: '$mensagem'});})</script>"; 														                 		    
         		}
-
     	?>
-    	<form action="../functions/post.php?pag=apontar" method="post" id="salvaApont" onsubmit="js_validaEnvioApont()" >
-    	<script language= "JavaScript">$(document).ready(function(){ $("#idRetornoApontar").modal("show"); });</script>
-        	<div class="container">
+    	<form action="../functions/post.php?pag=apontar" method="post" id="salvaApont" onsubmit="js_validaEnvioApont(event, '<?php if (isset($_SESSION['APV'])){ echo $_SESSION['APV'];}else{ echo 0;} ?>', '<?php echo $_SESSION['nomeUsuario'];?>')" >
+    	<div class="container">
         		<div id="dadosColab" class="row">
         			<div class="col-md-2">
         				<label for="inpSecao">Seção:</label>
@@ -42,7 +40,7 @@ include_once $_SERVER["DOCUMENT_ROOT"].'/_utilitaries/config.php';
         			</div>
         			<div class="col-md-3">
         				<label for="selSecaoDesc">Descrição:</label>
-        				<select id="selSecaoDesc" name="selSecaoDesc" type="text" class="selectpicker form-control border APV" data-live-search="true" data-style="btn" disabled>
+        				<select id="selSecaoDesc" name="selSecaoDesc" type="text" class="form-control border APV" data-live-search="true" data-style="btn" title="Selecionar Seção" disabled required>
         					<option value="<?php echo $_SESSION['secaoDesc'];?>"><?php echo $_SESSION['secaoDesc'];?></option>
         				</select>
         			</div>
@@ -52,28 +50,28 @@ include_once $_SERVER["DOCUMENT_ROOT"].'/_utilitaries/config.php';
         			</div>
         			<div class="col-md-5">
         				<label for="selNome">Nome:</label>
-        				<select id="selNome" name="selNome" type="text" class="selectpicker form-control border APV" data-live-search="true" data-style="btn" disabled>
+        				<select id="selNome" name="selNome" type="text" class="form-control border APV" data-live-search="true" data-style="btn" title="Selecionar Nome" disabled required>
         					<option value="<?php echo $_SESSION['nomeUsuario'];?>"><?php echo $_SESSION['nomeUsuario'];?></option>
         				</select>
         			</div>
         		</div>
         		<div id="dadosLanc" class="row">
-        			<div class="col-md-2">
+        			<div class="col-md-3">
         				<label for="inpDataInicio">Data Início:</label>
         				<input type="text" class="form-control APV" id="inpDataInicio" name="inpDataInicio" autocomplete="off" readOnly required></input>
         			</div>
-        			<div class="col-md-4">
-        				<label for="inpHoraInicio">Hora Início:</label>
-        				<input id="inpHoraInicio" name="inpHoraInicio" type="time" class="form-control APT APV" readOnly onblur="js_ApontarValidaHora('<?php if (isset($_SESSION["APV"])){ echo $_SESSION["APV"];}else{ echo 0;}  ?>', document.getElementById('inpDataInicio'))" required></input>
+        			<div class="col-md-3">						
+						<label for="inpHoraInicio">Hora Início:</label>
+						<input id="inpHoraInicio" name="inpHoraInicio" class="form-control APT APV" type="text" onblur="js_ApontarValidaHora('<?php if (isset($_SESSION['APV'])){ echo $_SESSION['APV'];}else{ echo 0;} ?>', '<?php echo $_SESSION['usuarioLogado'];?>')" readOnly required></input>
         			</div>
-        			<div class="col-md-2">
+        			<div class="col-md-3">
         				<label for="inpDataFim">Data Fim:</label>
         				<input type="text" class="form-control" id="inpDataFim" name="inpDataFim" readOnly></input>
         			</div>
-        			<div class="col-md-4">
-        				<label for="inpHoraFim">Hora Fim:</label>
-        				<input id="inpHoraFim" name="inpHoraFim" type="time" class="form-control APT APV" onblur="js_ApontarValidaHora('<?php if (isset($_SESSION["APV"])){ echo $_SESSION["APV"];}else{ echo 0;} ?>', document.getElementById('inpDataInicio'))" required readOnly></input>
-        			</div>
+        			<div class="col-md-3">						
+						<label for="inpHoraFim">Hora Fim:</label>
+						<input id="inpHoraFim" name="inpHoraFim" class="form-control APT APV" type="text" onblur="js_ApontarValidaHora('<?php if (isset($_SESSION['APV'])){ echo $_SESSION['APV'];}else{ echo 0;} ?>', '<?php echo $_SESSION['usuarioLogado'];?>')" readOnly required></input>					
+					</div>
         		</div>
         		<div id="dadosOS" class="row">
         			<div class="col-md-3">
@@ -107,12 +105,12 @@ include_once $_SERVER["DOCUMENT_ROOT"].'/_utilitaries/config.php';
         		<div id="dadosAtiv" class="row">
         			<div class="col-md-6">
         				<label for="selParte">Partes/Peças:</label>
-                       <select id="selParte" name="selParte" class="selectpicker form-control border APT APV" data-live-search="true" title="Selecionar Parte/Peça" data-style="btn" disabled>
+                       <select id="selParte" name="selParte" class="selectpicker form-control border APT APV" data-live-search="true" title="Selecionar Parte/Peça" data-style="btn" disabled required>
                         </select>
                     </div>
         			<div class="col-md-6">
     					<label for="selAtiv">Atividades:</label>
-        				<select id="selAtiv" name="selAtiv" class="selectpicker form-control border APT APV" data-live-search="true" title="Selecionar Atividade" data-style="btn" disabled>
+        				<select id="selAtiv" name="selAtiv" class="selectpicker form-control border APT APV" data-live-search="true" title="Selecionar Atividade" data-style="btn" disabled required>
                         </select>
         			</div>
         		</div>
@@ -121,7 +119,7 @@ include_once $_SERVER["DOCUMENT_ROOT"].'/_utilitaries/config.php';
         				<input id="inpRetrabalho" name="inpRetrabalho" type="checkbox" readOnly class="form-check-input-inline mr-1 APT APV" onclick="js_exibeCampos('CAUSA_RETRABALHO', document.getElementById('inpRetrabalho').checked==true?'':'none')"></input>
         				<label class="form-check-label-inline" for="inpRetrabalho">Retrabalho</label>
         			</div>
-        			<div class="col-md-6 CAUSA_RETRABALHO" style="display:none;">
+        			<div class="col-md-6 CAUSA_RETRABALHO REQUIRED" style="display:none;">
         				<select id="selCausaRetrabalho" name="selCausaRetrabalho" class="selectpicker form-control border" data-live-search="true" title="Selecionar Causa do Retrabalho" data-style="btn"></select>
         			</div>
         			<div class="col-md-3 form-check mt-2">
@@ -129,6 +127,11 @@ include_once $_SERVER["DOCUMENT_ROOT"].'/_utilitaries/config.php';
     					<label class="form-check-label-inline" for="inpServCampo">Serviço de Campo</label>
         			</div>
         		</div>
+				<div class="row mt-2 ">
+					<label class="text"  for="inptext">Observação</label>
+					<div class="col-md">
+						<textarea placeholder="Observação" id="observacao" name="observacao" cols=30 rows="3" class="form-control" maxlength="254"></textarea>
+					</div>
         		<div id="salvar" class="row justify-content-end mt-5 APT APV" style="display:none;">
     				<button type="submit" class="btn btn-primary col-md-1">Salvar</button>
         		</div>
@@ -143,83 +146,64 @@ include_once $_SERVER["DOCUMENT_ROOT"].'/_utilitaries/config.php';
                 if ((e.keyCode == 10)||(e.keyCode == 13)) {
                     e.preventDefault();
                 }
-            });
+            });			
+			
+			//inicializa a selecao
+			$('#selSecaoDesc').selectpicker(); 
+			$('#selNome').selectpicker();
 
-			//preencher campos da OS
-            $('#inpNumOS').on('change', function (element) {
-				js_tamanhoCampoOS(document.getElementById('inpNumOS'));
-            });
+			//inicializa os campos de hora
+			$("#inpHoraFim, #inpHoraInicio").inputmask("datetime",{placeholder:"--:--", clearMaskOnLostFocus:false, inputFormat: "HH:MM", autoUnmask: true});
 
 			if(<?php if (isset($_SESSION["APV"])){ echo $_SESSION["APV"];}else{ echo 0;} ?> == true){ //verifica se colaborador pode aprovar
 
 				//inicializa calendário em campos de datas
-				var minDate = (<?php $config = new Config(); echo $config->diaApontRetroativo; ?> == true);
-    			js_DataApontRetroativo(minDate); //define minDate no calendário
+				var minDate = js_DataApontRetroativo((<?php $config = new Config(); echo $config->diaApontRetroativo; ?> == true), <?php echo $_SESSION["APT_RET"]; ?>); //define o menor dia disponível para apontamento
 
 				$("#inpDataInicio").datepicker({
-					onSelect: function(value, date){
-                    	js_ApontarValidaHora('<?php if (isset($_SESSION["APV"])){ echo $_SESSION["APV"];}else{ echo 0;}  ?>', document.getElementById('inpDataInicio'));
-                    }
-                });
+					format: 'dd/mm/yyyy',
+    				startDate: minDate,
+					language: 'pt-BR',
+					endDate: Date(),
+					todayHighlight: true,
+					autoclose: true
+                }); 
 
-    			$('#selSecaoDesc').on('shown.bs.select', function (e, clickedIndex, isSelected, previousValue) {
-    				js_recuperaSecaoNomeSup(document.getElementById("selSecaoDesc"), "<?php echo $_SESSION["usuarioLogado"];?>", "preencherSecao");
-    			});
-
-    			$('#selNome').on('shown.bs.select', function (e, clickedIndex, isSelected, previousValue) {
-    				js_recuperaSecaoNomeSup(document.getElementById("inpChapa"), document.getElementById("selNome"), "preencherNome");
-    			});
-
-    			$('#selSecaoDesc').on('change', function (element) {
-                  js_recuperaSecaoNomeSup(document.getElementById("selSecaoDesc"), document.getElementById("inpSecaoDesc"), "selecionarSecao");
-                });
-
-    			$('#selNome').on('change', function (element) {
-                  js_recuperaSecaoNomeSup(document.getElementById("inpChapa"), document.getElementById("selNome"), "selecionarNome");
-                });
+				$("#inpDataInicio").on('changeDate', function(){
+                    	js_ApontarValidaHora('<?php if (isset($_SESSION["APV"])){ echo $_SESSION["APV"];}else{ echo 0;}  ?>', '<?php echo $_SESSION['usuarioLogado'];?>', document.getElementById('inpDataInicio'));
+                    })
+				
+				//carrega seções para supervisor
+				$('#selSecaoDesc').on('loaded.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+					js_recuperaSecaoSup(this, '<?php echo $_SESSION['usuarioLogado'];?>');
+				}); 
 			}
-
-            //preencher campo da seção e nomes de colaborador
-            $('#inpNumOS').on('change', function (e, clickedIndex, isSelected, previousValue) {
-				js_recuperaDadosOS(document.getElementById('inpNumOS'));
-            });
-
-			//retornar as partes e atividades
-			$('#selParte').on('shown.bs.select', function (e, clickedIndex, isSelected, previousValue) {
-              js_recuperaDadosParteAtiv(this);
-            });
-
-            $('#selAtiv').on('shown.bs.select', function (e, clickedIndex, isSelected, previousValue) {
-              js_recuperaDadosParteAtiv(this);
-            });
-
-			//recarrega a atividade para cada vez que a parte for alterada
-            $('#selParte').change(function (e, clickedIndex, isSelected, previousValue) {
-              $("#selAtiv option").remove();
-              $("#selAtiv").selectpicker("refresh");
-              $('#selAtiv').on('shown.bs.select', function (e, clickedIndex, isSelected, previousValue) {
-                  js_recuperaDadosParteAtiv(this);
-                });
-            });
-
-			$('#selAtiv').on('shown.bs.select', function (e, clickedIndex, isSelected, previousValue) {
-              js_recuperaDadosParteAtiv(this);
-            });
-
-            //retorna as causas do retrabalho
-            document.getElementById('selCausaRetrabalho').innerHTML = '<?php echo include_causaRetrabalho(); ?>';
+			js_addEventosIniciais();
+			
+			//retorna as causas do retrabalho
+			document.getElementById('selCausaRetrabalho').innerHTML = '<?php echo include_causaRetrabalho(); ?>';
+			$("#selCausaRetrabalho option[value='NA']").remove();
 			$("#selCausaRetrabalho").selectpicker("refresh");
 
 			//retornar as OS's genéricas
-        	document.getElementById('dpdownOSGenerica').innerHTML = '<?php echo include_itemOSGenerica(); ?>';
+			document.getElementById('dpdownOSGenerica').innerHTML = '<?php echo include_itemOSGenerica(); ?>';
 
+			//inicializa a Descrição da seção e nome do colaborador logado
+			$('#selSecaoDesc').selectpicker('val', '<?php echo $_SESSION['secaoDesc'];?>');
+			js_recuperaNomeSup('<?php echo $_SESSION['nomeUsuario'];?>', '<?php echo $_SESSION['chapa'];?>');
+			
     		//chama função no js que carrega os campos conforme permissão selecionada via PHP
     		<?php
     		  echo ($readyPermissoes);
     		?>
-
-
-
         });
+		//oculta modal de processando apontamento
+		// $(window).ready(function () {
+  
+		// 	$("#salvaApont").submit(function (e) {				
+		// 		bootbox.hideAll();
+		// 		console.log(e);
+  		// 	})
+		// })
 	</script>
 </html>
