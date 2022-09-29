@@ -35,3 +35,35 @@ button.bg:hover{
 .aprov{
 	background-color: #E9ECEF!important;
 }
+
+.form-check-input.aprovar:checked{
+	background-color: #04ca35!important;
+}
+.form-check-input.reprovar:checked{
+	background-color: #fa0606!important;
+}
+
+.fc-event.aprov.select{
+	background-color: #c4e0f7!important;
+	--fc-list-event-hover-bg-color: #c4e0f7!important;
+}
+.alterahover:hover{
+	background-color: #c4e0f7!important;
+}
+
+.imgBackground{
+	position: absolute;
+	width:100%;
+	height:100%;
+	z-index:-1;
+}
+
+.datepicker td,th{
+    text-align: center;
+    padding: 6px 10px;
+    font-size: 14px;
+}
+
+.datepicker-switch{
+	font-size: 18px;
+}
