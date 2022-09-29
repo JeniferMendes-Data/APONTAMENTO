@@ -153,7 +153,7 @@ include_once $_SERVER["DOCUMENT_ROOT"].'/_utilitaries/config.php';
 			$('#selNome').selectpicker();
 
 			//inicializa os campos de hora
-			$("#inpHoraFim, #inpHoraInicio").inputmask("datetime",{placeholder:"--:--", clearMaskOnLostFocus:false, inputFormat: "HH:MM", autoUnmask: true});
+			$("#inpHoraFim, #inpHoraInicio").inputmask("datetime",{placeholder:"--:--",outputFormat: "HH:MM", clearMaskOnLostFocus:false, inputFormat: "HH:MM", autoUnmask: true});
 
 			if(<?php if (isset($_SESSION["APV"])){ echo $_SESSION["APV"];}else{ echo 0;} ?> == true){ //verifica se colaborador pode aprovar
 

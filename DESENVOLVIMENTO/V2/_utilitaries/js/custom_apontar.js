@@ -52,6 +52,20 @@ function js_ApontarValidaHora(sup, usuLogin = "", origem = "", id = ""){
 				    message: "Hora fim deve ser maior que hora início!",
 				})
 			});
+		}else if($("#inpHoraInicio").val().indexOf("-") != -1 || $("#inpHoraFim").val().indexOf("-") != -1){
+			return $(document).ready(function(){
+				bootbox.alert({
+					buttons: {
+				        ok: {
+				            label: 'OK',
+				            className: 'bg text-light'
+				        },
+					},
+					centerVertical: true,
+				    title: "Apontamento Inválido",
+				    message: "Informe a hora e os minutos!",
+				})
+			});
 		}else if(origem == ""){ //lançamento primeiro turno
 			if (inpDataInicio.value == '') {
 				inpDataInicio.value = new Date().toLocaleDateString('en-GB');
@@ -450,6 +464,10 @@ function js_validaEnvioApont(evento, sup, usuLogado){
 
 			if (varInpHoraInicio.value > varInpHoraFim.value) {
 				throw "Hora início está maior que a hora final.";
+			}
+
+			if ($("#inpHoraInicio").val().indexOf("-") != -1 || $("#inpHoraFim").val().indexOf("-") != -1) {
+				throw "Preencha as horas e os minutos.";
 			}
 
 			if (varInpNumOS.value) { //valida o grupo de campo da OS
