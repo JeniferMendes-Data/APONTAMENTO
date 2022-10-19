@@ -34,6 +34,8 @@ function json_postRecuperaDadosOS() {
 }
 
 function json_postRecuperaDadosParteAtiv() {
+    $config = new Config();
+
     $idSecao = "";
     $result = querySelect_idSecao($_POST["recuperaDadosParteAtiv"]["codSecao"]);
     $idSecao .= $result[0]["ID"];
@@ -44,6 +46,8 @@ function json_postRecuperaDadosParteAtiv() {
         $jsonRetorno[0]['DESCRICAO_PARTE'] = 'Nao foi possivel carregar os itens...';
         $jsonRetorno[0]['ATIV'] = 0;
         $jsonRetorno[0]['DESCRICAO_ATIV'] = 'Nao foi possivel carregar os itens...';
+    }else{
+        array_push($jsonRetorno, $config->legSecaoFilial);
     }
 
     echo json_encode($jsonRetorno);

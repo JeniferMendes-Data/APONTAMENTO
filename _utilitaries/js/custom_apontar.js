@@ -302,7 +302,9 @@ function js_recuperaDadosParteAtiv(campoOrigem, campoFiltro){
 					codAtual = el[cod];
 					descAtual = el[desc];
 					posicaoAtual = {[codAtual]:descAtual};
-					Object.assign(idValor[cod],  posicaoAtual);
+					if (codAtual != undefined && descAtual != undefined && posicaoAtual != undefined) {
+						Object.assign(idValor[cod],  posicaoAtual);						
+					}
 				}
 			});
 			valorFim = Object.entries(idValor[cod]);
