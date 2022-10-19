@@ -14,7 +14,7 @@ if (session_status() == 1){
 		?>
 	</head>
 	<body>
-		<h1 class="text-center text-danger">AMBIENTE DE TESTES</h1>
+		<h1 class="text-center text-danger">AMBIENTE DE TESTES GITHUB</h1>
 		<div class="container position-absolute top-50 start-50 translate-middle" style="">
             <div class="form-group">
                 <form method="post" action="<?php echo "functions/post.php?pag=login";?>" id="login">
