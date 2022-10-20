@@ -270,7 +270,9 @@ function js_recuperaDadosParteAtiv(campoOrigem, campoFiltro){
 		}
 	
 		function interna_atualizaCampo(dados) {
-			var desc, cod, idValor = {};
+			var desc, cod, idValor = {}, legFilial, legFilialLinha, secaoAtual;			
+			secaoAtual = document.getElementById("inpSecao").value; //secao selecionada
+
 			//exclui options anteriores do botão
 			$("#" + campoOrigem.id + " option").remove();
 			$("#" + campoOrigem.id).selectpicker('refresh');
@@ -297,6 +299,8 @@ function js_recuperaDadosParteAtiv(campoOrigem, campoFiltro){
 			}
 			Object.assign(idValor, {[cod]:{}});
 			
+			legFilial = dados[dados.length -1]; //abreviação de seções para sorocaba
+
 			dados.filter(el => {
 				if (cod == "PARTE" || campoFiltro == el["PARTE"]) {				
 					codAtual = el[cod];
@@ -309,7 +313,9 @@ function js_recuperaDadosParteAtiv(campoOrigem, campoFiltro){
 			});
 			valorFim = Object.entries(idValor[cod]);
 			for (var i = 0; i < valorFim.length; i++) {
-				$("#" + campoOrigem.id).append("<option value='" + valorFim[i][0] + "'>" + valorFim[i][1] + "</option>");
+				//abreviação de seções para sorocaba
+				legFilialLinha = Object.getOwnPropertyDescriptor(legFilial, secaoAtual);
+				$("#" + campoOrigem.id).append("<option value='" + valorFim[i][0] + "'>" + (legFilialLinha == undefined?'':legFilialLinha.value) + ' - ' + valorFim[i][1] + "</option>");
 			}
 	
 			$("#" + campoOrigem.id).selectpicker('refresh');		
