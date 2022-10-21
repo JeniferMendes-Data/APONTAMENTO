@@ -360,7 +360,7 @@ function interna_editApont(dadosApont, sup) {
 		}else{//Fora do período permitido para edição
 			readOnly = true;
 			required = false;
-			aprovarDisplay = 'none';
+			aprovarDisplay = (sup)?'block':'none';
 			editarDisplay = 'block';
 			fecharInnerHTML = 'Fechar';
 		}
@@ -407,6 +407,7 @@ function interna_editApont(dadosApont, sup) {
 				message: "Favor cancelar a edição e abrir novamente"
 			});
 		}else{
+			js_validaAntesEnvio();
 			//valida horas antes de editar
 			retorno = js_ApontarValidaHora(sup, dadosApont.event.extendedProps.ID_USUARIO, 'ger', dadosApont.event.id);
 			if (retorno == undefined) {
@@ -432,6 +433,7 @@ function interna_editApont(dadosApont, sup) {
 		
 	});
 	$('#' + botaoAprovar.id).on('click', function (element) {	
+		js_validaAntesEnvio();
 		//valida horas antes de editar
 		retorno = js_ApontarValidaHora(sup, dadosApont.event.extendedProps.ID_USUARIO, 'ger', dadosApont.event.id);
 		var retornoJSON = JSON.parse(retorno.responseText);	
@@ -612,6 +614,9 @@ function interna_botaoAprova() {
 function interna_addEventosIniciaisEdit(){
 	//preencher campos da OS
 	$('#inpNumOS').on('change', function (element) {
+		if (!!(this.value < '000100' ^ document.getElementById("selParte").innerText == 'PARADA')){//os's genéricas
+			$("#selParte").selectpicker("val", "");
+		}
 		js_tamanhoCampoOS(document.getElementById("inpNumOS"), "ger");
 		js_recuperaDadosOS(document.getElementById("inpNumOS"), "ger");
 	});	
@@ -666,4 +671,68 @@ function js_enviaEditApont(botao, idApont, login, sup){
 			js_pesquisaGerenciar(document.getElementById('inpDataFiltro').value.split('/').reverse().join('/'), document.getElementById('selNome').value,1, sup);						
 		}
 	});	
+}
+
+//função para validar se os campos estão preenchidos corretamente antes de editar
+function js_validaAntesEnvio(){
+	var varInpDataInicio = document.getElementById("inpDataInicio");
+	var varInpHoraInicio = document.getElementById("inpHoraInicio"); 
+	var varInpHoraFim = document.getElementById("inpHoraFim"); 
+	var varInpNumOS = document.getElementById("inpNumOS"); 
+	var varSelParte = document.getElementById("selParte"); 
+	var varSelAtiv = document.getElementById("selAtiv");
+	var varSelCausaRetrabalho = document.getElementById("selCausaRetrabalho");
+	var varInpServCampo = document.getElementById("inpServCampo");
+	var varObservacao = document.getElementById("observacao");	
+
+	try {
+		if (varInpHoraInicio.value > varInpHoraFim.value) {
+			throw "Hora início está maior que a hora final.";
+		}
+
+		if ($("#inpHoraInicio").val().indexOf("-") != -1 || $("#inpHoraFim").val().indexOf("-") != -1) {
+			throw "Preencha as horas e os minutos.";
+		}
+
+		if (!varInpNumOS.value) { //valida o grupo de campo da OS
+			throw "Preencha o número da OS.";
+		}
+
+		if (varSelParte.value == "") {
+			throw "Preencha o campo de Partes/Peças.";
+		}else if (varSelAtiv.value == ""){
+			throw "Preencha o campo de Atividades.";
+		}
+
+		if (varSelParte.value == 0 || varSelAtiv.value == 0) {
+			throw "Parte/Peça ou Atividade não encontrada para sua seção.";
+		}
+
+		if (varSelCausaRetrabalho.value == "") {
+			throw "Preencha o campo Causa do Retrabalho.";
+		}
+
+		if (varInpServCampo.checked == true) {
+			varInpServCampo.value = "S";
+		}else{
+			varInpServCampo.value = "N";
+		}
+
+		if (varObservacao.value == "") {//insere um espaço na string para não enviar null
+			varObservacao.value = " ";
+		}
+
+	} catch (e) { //cancela o envio do formulário
+		bootbox.alert({
+			buttons: {
+		        ok: {
+		            label: 'OK',
+		            className: 'bg text-light'
+		        },
+			},
+			centerVertical: true,
+		    title: "Edição Inválida",
+		    message: e
+		});
+	}
 }

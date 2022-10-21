@@ -101,7 +101,7 @@ function post_getApontar($idApont, $valida, $valoresEdit = "") {
             $inpNumOs = $_POST["inpNumOS"];
             $chapa = $_POST["inpChapa"];
             $hLancamento = date('Y-m-d H:i:s');
-
+            $resp_apv = "NULL";
         }elseif ($valida == 'E'){ //editar
             $apont = querySelect_buscaApontamentoID($idApont);
             if (!isset($apont)) {//apontamento não encontrado
@@ -121,6 +121,7 @@ function post_getApontar($idApont, $valida, $valoresEdit = "") {
             $observacao = interna_verificaCampoNull($valoresEdit["inpObs"]);
             $inpSecao = $apont[0]["SECAO_APONT"];
             $hLancamento = date_format($apont[0]["H_LANCAMENTO"], 'Y-m-d H:i:s');
+            $resp_apv = "NULL";
         }else{ //aprovar_reprovar
             $apont = querySelect_buscaApontamentoID($idApont);
             if (!isset($apont)) {//apontamento não encontrado
@@ -140,6 +141,7 @@ function post_getApontar($idApont, $valida, $valoresEdit = "") {
             $chapa = querySelect_buscaChapaColaborador($apont[0]["ID_USUARIO"]);
             $chapa = $chapa[0]["CHAPA"];
             $hLancamento = date_format($apont[0]["H_LANCAMENTO"], 'Y-m-d H:i:s');
+            $resp_apv = $_SESSION['usuarioLogado'];
         }
 
         //recupera coligada e filial da secao do apontamento
@@ -168,7 +170,8 @@ function post_getApontar($idApont, $valida, $valoresEdit = "") {
                 "CODREQ" => $codRequisitante[0]["CODINTERNO"],
                 "ID_APONTAMENTO" => $idApont,
                 "CODFILIAL" => $origemSecao[0]["CODFILIAL"],
-                "CODCOLIGADA" => $origemSecao[0]["CODCOLIGADA"]
+                "CODCOLIGADA" => $origemSecao[0]["CODCOLIGADA"],
+                "RESP_APV" => $resp_apv
             ));
 
             //manipula o banco 
@@ -292,7 +295,7 @@ function interna_montaXML($campos) {
     $xml->TITMMOVCOMPL->RECCREATEDON = $campos["H_LANCAMENTO"];
     $xml->TITMMOVCOMPL->RECMODIFIEDBY = $config->usuarioIntegracaoRM;
     $xml->TITMMOVCOMPL->RECMODIFIEDON = $dataHoraAtual;
-    $xml->TITMMOVCOMPL->DESCCOMPL = 'APP';
+    $xml->TITMMOVCOMPL->DESCCOMPL = $campos["OBS"];
     $xml->TITMMOVCOMPL->NOS = substr($campos["N_OS"], -6);
     $xml->TITMMOVCOMPL->TIPORETRABALHO = $campos["RETRABALHO"];
     $xml->TITMMOVCOMPL->SERV_CAMPO = $campos["SERV_CAMPO"];

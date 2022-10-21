@@ -493,7 +493,7 @@ function js_validaEnvioApont(evento, sup, usuLogado){
 			}
 
 			if (varSelParte.value == 0 || varSelAtiv.value == 0) {
-				throw "Parte/Peça ou Atividade não entrada para sua seção.";
+				throw "Parte/Peça ou Atividade não encontrada para sua seção.";
 			}
 
 			if (varInpRetrabalho.checked == true && varSelCausaRetrabalho.value == "") {
