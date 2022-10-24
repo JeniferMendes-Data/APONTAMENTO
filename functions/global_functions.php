@@ -11,6 +11,11 @@ function global_geraLog($msg, $tipo, $file="") {
     $levelStr = '';
     $file = $_SERVER["DOCUMENT_ROOT"].'/_utilitaries/log.txt';
 
+    //backup de arquivos
+    if (date('Y-m-d', fileatime($file)) < date('Y-m-d')){
+        rename($_SERVER["DOCUMENT_ROOT"].'/_utilitaries/log.txt', $_SERVER["DOCUMENT_ROOT"].'/_utilitaries/bkp_log/log_'.date('Y-m-d', fileatime($file)).'.txt');
+    }    
+
     // verifica o tipo de log
     switch ($tipo)
     {
@@ -42,7 +47,7 @@ function global_geraLog($msg, $tipo, $file="") {
     $msg = sprintf( "[%s] [%s]: %s%s", $date, $levelStr, $msg, PHP_EOL );
     // escreve o log no arquivo
     // é necessário usar FILE_APPEND para que a mensagem seja escrita no final do arquivo, preservando o conteúdo antigo do arquivo
-    file_put_contents($file, $msg, FILE_APPEND);
+    file_put_contents($file, $msg, FILE_APPEND);    
 }
 
 //função para liberar o apontamento retroativo fora do período padrão contido em _utilitaries/config.php

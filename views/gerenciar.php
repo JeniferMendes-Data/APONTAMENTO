@@ -129,7 +129,7 @@ include_once $_SERVER["DOCUMENT_ROOT"].'/functions/global_functions.php';
 							<select id="selCausaRetrabalho" name="selCausaRetrabalho" class="form-control border EDIT ENVIAR" data-live-search="true" title="Selecionar Causa do Retrabalho" data-style="btn" required disabled></select>
 						</div>
 					</div>
-					<div class="row mb-3 align-items-center">						
+					<div id='divServCampo' class="row mb-3 align-items-center">						
 						<div class="col-sm-1">
 							<input id="inpServCampo" name="inpServCampo" type="checkbox" class="form-check-input-inline mr-1 EDIT ENVIAR"  required disabled></input>
 						</div>
@@ -189,6 +189,12 @@ include_once $_SERVER["DOCUMENT_ROOT"].'/functions/global_functions.php';
     		<?php
     		  echo ($readyPermissoes);
     		?>
+			//bloqueia novamente o serviço de campo para coligada XL
+			if (<?php echo $_SESSION['coligada']; ?> == 2) {
+				document.getElementById("inpServCampo").value = "N";
+				document.getElementById("inpServCampo").classList.remove('EDIT', 'ENVIAR'); //remove permissões de edição
+				document.getElementById("divServCampo").style.display = 'none';
+			}
 		});	
 	</script>
 </html> 

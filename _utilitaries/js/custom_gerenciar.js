@@ -160,7 +160,7 @@ function interna_atualizaEventos(json, data, acao, login) {
 		if (eval(varCondicao)) {
 			apt.push({
 					id: element["ID_APONTAMENTO"],
-					title: element["ID_USUARIO"] + " - OS: " + element["N_OS"] + " - PARTE/PEÇA: " + element["PARTE_DESC"] + " - ATIV: " + element["ATIV_DESC"] + " - RETRABALHO: " + element["RETRABALHO"] + " - SERVIÇO DE CAMPO: " + element["SERV_CAMPO"], 
+					title: element["ID_USUARIO"] + " - OS: " + element["N_OS"] + " - PARTE/PEÇA: " + element["PARTE_DESC"] + " - ATIV: " + element["ATIV_DESC"] + " - RETRABALHO: " + element["RETRABALHO"] + (element["SECAO_APONT"] == '02.01.001'? "":" - SERVIÇO DE CAMPO: " + element["SERV_CAMPO"]), 
 					start: new Date(element["H_INICIO"].date).toJSON(),
 					end: new Date(element["H_FIM"].date).toJSON(),
 				extendedProps: {

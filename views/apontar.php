@@ -21,7 +21,7 @@ include_once $_SERVER["DOCUMENT_ROOT"].'/_utilitaries/config.php';
         		echo include_menu("Apontar","Apontar Horas");
 
         		//verifica permissões do usuário
-				$readyPermissoes = global_verificaPermissao();
+				$readyPermissoes = global_verificaPermissao();			
 
         		//retorno de inclusão de apontamento
         		if (isset($_SESSION["msg"])) {
@@ -122,7 +122,7 @@ include_once $_SERVER["DOCUMENT_ROOT"].'/_utilitaries/config.php';
         			<div class="col-md-6 CAUSA_RETRABALHO REQUIRED" style="display:none;">
         				<select id="selCausaRetrabalho" name="selCausaRetrabalho" class="selectpicker form-control border" data-live-search="true" title="Selecionar Causa do Retrabalho" data-style="btn"></select>
         			</div>
-        			<div class="col-md-3 form-check mt-2">
+        			<div id='divServCampo' class="col-md-3 form-check mt-2">
         				<input id="inpServCampo" name="inpServCampo" type="checkbox" readOnly class="form-check-input-inline mr-1 APT APV"></input>
     					<label class="form-check-label-inline" for="inpServCampo">Serviço de Campo</label>
         			</div>
@@ -196,6 +196,13 @@ include_once $_SERVER["DOCUMENT_ROOT"].'/_utilitaries/config.php';
     		<?php
     		  echo ($readyPermissoes);
     		?>
+			//bloqueia novamente o serviço de campo para coligada XL
+			if (<?php echo $_SESSION['coligada']; ?> == 2) {
+				document.getElementById("inpServCampo").value = "N";
+				document.getElementById("inpServCampo").classList.remove('APT', 'APV'); //remove permissões de edição
+				document.getElementById("divServCampo").style.display = 'none';
+			}
+			
         });
 		//oculta modal de processando apontamento
 		// $(window).ready(function () {

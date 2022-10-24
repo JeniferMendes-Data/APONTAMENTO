@@ -8,7 +8,6 @@ class Config{
     public $nomeBaseRM;
     public $usuarioIntegracaoRM;
     public $senhaIntegracaoRM;
-    public $coligada;
     public $enderecoSOAP;
     public $OSBloqueada;
     public $StatusOSAtv;
@@ -29,7 +28,6 @@ class Config{
         $this->StatusOSAtv = "0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 17, 18, 19, 20";
         $this->usuarioIntegracaoRM = "APONTAMENTO";
         $this->senhaIntegracaoRM = "A@3D5A7t7A";
-        $this->coligada = 1;
         $this->enderecoSOAP = "http://192.168.0.22:8051/";
         $this->legSecaoFilial =  array( "02.01.013"=>"CALD", "02.01.004"=>"MECA", "02.01.007"=>"POLO", "02.01.031"=>"ISOBOB");
     }

@@ -37,6 +37,8 @@ function post_getLogin() {
             $_SESSION['codSecao'] = $resultado_usuario[0]['PFUNC_CODSECAO'];
             $_SESSION['codPessoa'] = $resultado_usuario[0]['PPESSOA_CODIGO'];
             $_SESSION['codEquipe'] = $resultado_usuario[0]['PFUNC_CODEQUIPE'];
+            $_SESSION['coligada'] = $resultado_usuario[0]['PSECAO_CODCOLIGADA'];
+            $_SESSION['filial'] = $resultado_usuario[0]['PSECAO_CODFILIAL'];
             //carrega tipo de permissão
             $tipoPermissao = querySelect_listaParam();
             if(isset($tipoPermissao)){
@@ -101,7 +103,7 @@ function post_getApontar($idApont, $valida, $valoresEdit = "") {
             $inpNumOs = $_POST["inpNumOS"];
             $chapa = $_POST["inpChapa"];
             $hLancamento = date('Y-m-d H:i:s');
-            $resp_apv = "NULL";
+            $resp_apv = "NULL";//corrigir
         }elseif ($valida == 'E'){ //editar
             $apont = querySelect_buscaApontamentoID($idApont);
             if (!isset($apont)) {//apontamento não encontrado
@@ -121,7 +123,7 @@ function post_getApontar($idApont, $valida, $valoresEdit = "") {
             $observacao = interna_verificaCampoNull($valoresEdit["inpObs"]);
             $inpSecao = $apont[0]["SECAO_APONT"];
             $hLancamento = date_format($apont[0]["H_LANCAMENTO"], 'Y-m-d H:i:s');
-            $resp_apv = "NULL";
+            $resp_apv = "NULL";//corrigir
         }else{ //aprovar_reprovar
             $apont = querySelect_buscaApontamentoID($idApont);
             if (!isset($apont)) {//apontamento não encontrado
@@ -222,10 +224,11 @@ function post_getApontar($idApont, $valida, $valoresEdit = "") {
                     die();
                 }
             }else{
+                query_rollbackTransaction($conn);
                 throw new Exception("Não foi possível concluir. Conexão com o banco não estabelecida");    
             }          
         }else{
-            throw new Exception("Não foi possível concluir devido a um erro no usuário Requisitante do RM. Favor entrar em contato com o TI.");
+            throw new Exception("Não foi possível concluir devido a um erro no usuário Requisitante do RM. Favor entrar em contato com a TI.");
         }  
     } catch (\Throwable $e) {
         if ($e->getCode() == 2) {//erro fatal necessário rollback
