@@ -103,7 +103,7 @@ function post_getApontar($idApont, $valida, $valoresEdit = "") {
             $inpNumOs = $_POST["inpNumOS"];
             $chapa = $_POST["inpChapa"];
             $hLancamento = date('Y-m-d H:i:s');
-            $resp_apv = "NULL";//corrigir
+            $resp_apv = ((isset($_SESSION['APV']) && $_SESSION['APV'] == 1)?$_SESSION['usuarioLogado']:"NULL");
         }elseif ($valida == 'E'){ //editar
             $apont = querySelect_buscaApontamentoID($idApont);
             if (!isset($apont)) {//apontamento não encontrado
@@ -123,7 +123,7 @@ function post_getApontar($idApont, $valida, $valoresEdit = "") {
             $observacao = interna_verificaCampoNull($valoresEdit["inpObs"]);
             $inpSecao = $apont[0]["SECAO_APONT"];
             $hLancamento = date_format($apont[0]["H_LANCAMENTO"], 'Y-m-d H:i:s');
-            $resp_apv = "NULL";//corrigir
+            $resp_apv = ((isset($_SESSION['APV']) && $_SESSION['APV'] == 1)?$_SESSION['usuarioLogado']:"NULL");
         }else{ //aprovar_reprovar
             $apont = querySelect_buscaApontamentoID($idApont);
             if (!isset($apont)) {//apontamento não encontrado
@@ -255,7 +255,7 @@ function interna_montaXML($campos) {
     
     $xml->TMOV->IDMOV = $campos["IDMOV"];
     $xml->TMOV->NUMEROMOV = $campos["NUMEROMOV"];
-    $xml->TMOV->CODCOLIGADA = $campos["CODCOLIGADA"];
+    $xml->TMOV->CODCOLIGADA = 1;
     $xml->TMOV->CODFILIAL = $campos["CODFILIAL"];
     $xml->TMOV->CODLOC = "01";
     $xml->TMOV->SERIE = '----';
@@ -269,7 +269,7 @@ function interna_montaXML($campos) {
     $xml->TMOV->RECMODIFIEDBY = $config->usuarioIntegracaoRM;
     $xml->TMOV->RECMODIFIEDON = $dataHoraAtual;
     $xml->TITMMOV->IDMOV = $campos["IDMOV"];
-    $xml->TITMMOV->CODCOLIGADA = $campos["CODCOLIGADA"];
+    $xml->TITMMOV->CODCOLIGADA = 1;
     $xml->TITMMOV->NSEQITMMOV = 1;
     $xml->TITMMOV->CODFILIAL = $campos["CODFILIAL"];
     $xml->TITMMOV->NUMEROSEQUENCIAL = 1;
@@ -283,13 +283,13 @@ function interna_montaXML($campos) {
     $xml->TITMMOV->RECMODIFIEDBY = $config->usuarioIntegracaoRM;
     $xml->TITMMOV->RECMODIFIEDON = $dataHoraAtual;
     $xml->TMOVCOMPL->IDMOV = $campos["IDMOV"];
-    $xml->TMOVCOMPL->CODCOLIGADA = $campos["CODCOLIGADA"];
+    $xml->TMOVCOMPL->CODCOLIGADA = 1;
     $xml->TMOVCOMPL->RECCREATEDBY =$config->usuarioIntegracaoRM;
     $xml->TMOVCOMPL->RECCREATEDON = $campos["H_LANCAMENTO"];
     $xml->TMOVCOMPL->RECMODIFIEDBY = $config->usuarioIntegracaoRM;
     $xml->TMOVCOMPL->RECMODIFIEDON = $dataHoraAtual;
     $xml->TITMMOVCOMPL->IDMOV = $campos["IDMOV"];
-    $xml->TITMMOVCOMPL->CODCOLIGADA = $campos["CODCOLIGADA"];
+    $xml->TITMMOVCOMPL->CODCOLIGADA = 1;
     $xml->TITMMOVCOMPL->NSEQITMMOV = 1;
     $xml->TITMMOVCOMPL->REQUISITANTE = $campos["CODREQ"];
     $xml->TITMMOVCOMPL->HORAINICIO = date("H:i", strtotime($campos["H_INICIO"]));

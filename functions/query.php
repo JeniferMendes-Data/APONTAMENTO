@@ -63,14 +63,14 @@ function querySelect_causaRetrabalho() {
 //Função para incluir apontamento na tabela interna log_apontamento
 function queryInsert_logApontamento($dados, $conn) {
     $base = new Config();
-    $query = "INSERT INTO ".$base->connectionInfo["Database"].".[dbo].[LOG_APONTAMENTO] ([N_OS], [ID_USUARIO], [VALIDA], [H_INICIO], [H_FIM], [H_LANCAMENTO], [ORIGEM], [RETRABALHO], [SERV_CAMPO], [PARTE], [ATIVIDADE], [RESP_CRIACAO], [IDMOV], [SECAO_APONT], [OBS]) VALUES ('".$dados["N_OS"]."', '".$dados["ID_USUARIO"]."','".$dados["VALIDA"]."', '".$dados["H_INICIO"]."', '".$dados["H_FIM"]."', '".$dados["H_LANCAMENTO"]."', '".$dados["ORIGEM"]."', '".$dados["RETRABALHO"]."', '".$dados["SERV_CAMPO"]."', '".$dados["PARTE"]."', '".$dados["ATIVIDADE"]."', '".$dados["RESP_CRIACAO"]."', '".$dados["IDMOV"]."', '".$dados["SECAO_APONT"]."', '".$dados["OBS"]."')";
+    $query = "INSERT INTO ".$base->connectionInfo["Database"].".[dbo].[LOG_APONTAMENTO] ([N_OS], [ID_USUARIO], [VALIDA], [H_INICIO], [H_FIM], [H_LANCAMENTO], [ORIGEM], [RETRABALHO], [SERV_CAMPO], [PARTE], [ATIVIDADE], [RESP_CRIACAO], [IDMOV], [SECAO_APONT], [OBS], [RESP_APV]) VALUES ('".$dados["N_OS"]."', '".$dados["ID_USUARIO"]."','".$dados["VALIDA"]."', '".$dados["H_INICIO"]."', '".$dados["H_FIM"]."', '".$dados["H_LANCAMENTO"]."', '".$dados["ORIGEM"]."', '".$dados["RETRABALHO"]."', '".$dados["SERV_CAMPO"]."', '".$dados["PARTE"]."', '".$dados["ATIVIDADE"]."', '".$dados["RESP_CRIACAO"]."', '".$dados["IDMOV"]."', '".$dados["SECAO_APONT"]."', '".$dados["OBS"]."', '".$dados["RESP_APV"]."')";
     return realizaConsulta($query, "queryInsert_logApontamento", $conn);
 }
 
 //Função para incluir apontamento na tabela interna log_apontamento
 function queryUpdate_logApontamento($dados, $conn) {
     $base = new Config();
-    $query = "UPDATE ".$base->connectionInfo["Database"].".[dbo].[LOG_APONTAMENTO] SET [N_OS] = '".$dados["N_OS"]."', [ID_USUARIO] = '".$dados["ID_USUARIO"]."', [VALIDA] = '".$dados["VALIDA"]."', [H_INICIO] = '".$dados["H_INICIO"]."', [H_FIM] = '".$dados["H_FIM"]."', [H_LANCAMENTO] = '".$dados["H_LANCAMENTO"]."', [ORIGEM] = '".$dados["ORIGEM"]."', [RETRABALHO] = '".$dados["RETRABALHO"]."', [SERV_CAMPO] = '".$dados["SERV_CAMPO"]."', [PARTE] = '".$dados["PARTE"]."', [ATIVIDADE] = '".$dados["ATIVIDADE"]."', [IDMOV] = '".$dados["IDMOV"]."', [SECAO_APONT] = '".$dados["SECAO_APONT"]."', [OBS] = '".$dados["OBS"]."' WHERE [ID_APONTAMENTO] = '".$dados["ID_APONTAMENTO"]."'";
+    $query = "UPDATE ".$base->connectionInfo["Database"].".[dbo].[LOG_APONTAMENTO] SET [N_OS] = '".$dados["N_OS"]."', [ID_USUARIO] = '".$dados["ID_USUARIO"]."', [VALIDA] = '".$dados["VALIDA"]."', [H_INICIO] = '".$dados["H_INICIO"]."', [H_FIM] = '".$dados["H_FIM"]."', [H_LANCAMENTO] = '".$dados["H_LANCAMENTO"]."', [ORIGEM] = '".$dados["ORIGEM"]."', [RETRABALHO] = '".$dados["RETRABALHO"]."', [SERV_CAMPO] = '".$dados["SERV_CAMPO"]."', [PARTE] = '".$dados["PARTE"]."', [ATIVIDADE] = '".$dados["ATIVIDADE"]."', [IDMOV] = '".$dados["IDMOV"]."', [SECAO_APONT] = '".$dados["SECAO_APONT"]."', [OBS] = '".$dados["OBS"]."', [RESP_APV] = '".$dados["RESP_APV"]."' WHERE [ID_APONTAMENTO] = '".$dados["ID_APONTAMENTO"]."'";
     return realizaConsulta($query, "queryUpdate_logApontamento", $conn);
 }
 

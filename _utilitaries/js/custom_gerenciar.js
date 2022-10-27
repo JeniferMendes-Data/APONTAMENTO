@@ -723,6 +723,7 @@ function js_validaAntesEnvio(){
 		}
 
 	} catch (e) { //cancela o envio do formulário
+		evento.preventDefault();
 		bootbox.alert({
 			buttons: {
 		        ok: {

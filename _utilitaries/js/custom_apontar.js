@@ -131,6 +131,10 @@ function js_apontarSelecionaItem(id, descricao, filial, nomeCentroCusto, origem 
 		$("#selParte").selectpicker("refresh");
 		$("#selAtiv option").remove();
 		$("#selAtiv").selectpicker("refresh");		
+	}else{
+		if (!!(id < '000100' ^ document.getElementById("selParte").innerText == 'PARADA')){//os's genéricas
+			$("#selParte").selectpicker("val", "");
+		}
 	}
 	
 	document.getElementById("inpNumOS").value = id;	
