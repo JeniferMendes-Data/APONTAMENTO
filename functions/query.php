@@ -49,7 +49,7 @@ function querySelect_lista($codSecao) {
 //Função para retornar os dados da seção baseado no código da mesma
 function querySelect_idSecao($codSecao) {
     $corporeRM = new Config();
-    $query = "select PSECAO.ID 'ID', PSECAO.CODCOLIGADA 'CODCOLIGADA', PSECAO.CODFILIAL 'CODFILIAL' from $corporeRM->nomeBaseRM.DBO.PSECAO PSECAO (NOLOCK) where PSECAO.CODIGO = '$codSecao'";
+    $query = "select PSECAO.ID 'ID', PSECAO.CODCOLIGADA 'CODCOLIGADA', PSECAO.CODFILIAL 'CODFILIAL' from $corporeRM->nomeBaseRM.DBO.PSECAO PSECAO (NOLOCK) where PSECAO.CODIGO = '$codSecao' AND PSECAO.CODCOLIGADA = ".$_SESSION['coligada'];
     return realizaConsulta($query, "querySelect_idSecao");
 }
 

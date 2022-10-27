@@ -1,0 +1,3 @@
+﻿[2022-10-24 11:48:10] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-10-24 11:50:12] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
+[2022-10-25 16:30:20] [ERROR]: Tentativa de login mal sucedida - Session MSG inexistente
