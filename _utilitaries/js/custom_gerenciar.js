@@ -407,38 +407,42 @@ function interna_editApont(dadosApont, sup) {
 				message: "Favor cancelar a edição e abrir novamente"
 			});
 		}else{
-			js_validaAntesEnvio();
-			//valida horas antes de editar
-			retorno = js_ApontarValidaHora(sup, dadosApont.event.extendedProps.ID_USUARIO, 'ger', dadosApont.event.id);
-			if (retorno == undefined) {
-				bootbox.alert({
-					buttons: {
-						ok: {
-							label: 'OK',
-							className: 'bg text-light'
+			var retValida = js_validaAntesEnvio(element);
+			if (retValida){
+				//valida horas antes de editar
+				retorno = js_ApontarValidaHora(sup, dadosApont.event.extendedProps.ID_USUARIO, 'ger', dadosApont.event.id);
+				if (retorno == undefined) {
+					bootbox.alert({
+						buttons: {
+							ok: {
+								label: 'OK',
+								className: 'bg text-light'
+							},
 						},
-					},
-					centerVertical: true,
-					title: "Erro ao validar horas",
-					onEscape: false,
-					message: "Favor cancelar a edição e abrir novamente"
-				});
-			}else{
-				var retornoJSON = JSON.parse(retorno.responseText);	
-				if (retornoJSON && retornoJSON[0]["TOTAL"] == 0) {
-					js_enviaEditApont(botaoEditar, dadosApont.event.id, dadosApont.event.extendedProps.ID_USUARIO, sup);	
+						centerVertical: true,
+						title: "Erro ao validar horas",
+						onEscape: false,
+						message: "Favor cancelar a edição e abrir novamente"
+					});
+				}else{
+					var retornoJSON = JSON.parse(retorno.responseText);	
+					if (retornoJSON && retornoJSON[0]["TOTAL"] == 0) {
+						js_enviaEditApont(botaoEditar, dadosApont.event.id, dadosApont.event.extendedProps.ID_USUARIO, sup);	
+					}
 				}
-			}				
+			}
 		}	
 		
 	});
 	$('#' + botaoAprovar.id).on('click', function (element) {	
-		js_validaAntesEnvio();
-		//valida horas antes de editar
-		retorno = js_ApontarValidaHora(sup, dadosApont.event.extendedProps.ID_USUARIO, 'ger', dadosApont.event.id);
-		var retornoJSON = JSON.parse(retorno.responseText);	
-		if (retornoJSON && retornoJSON[0]["TOTAL"] == 0) {
-			js_enviaEditApont(botaoAprovar, dadosApont.event.id, dadosApont.event.extendedProps.ID_USUARIO, sup);
+		var retValida = js_validaAntesEnvio(element);
+		if (retValida){
+			//valida horas antes de editar
+			retorno = js_ApontarValidaHora(sup, dadosApont.event.extendedProps.ID_USUARIO, 'ger', dadosApont.event.id);
+			var retornoJSON = JSON.parse(retorno.responseText);	
+			if (retornoJSON && retornoJSON[0]["TOTAL"] == 0) {
+				js_enviaEditApont(botaoAprovar, dadosApont.event.id, dadosApont.event.extendedProps.ID_USUARIO, sup);
+			}
 		}
 	});
 
@@ -674,7 +678,7 @@ function js_enviaEditApont(botao, idApont, login, sup){
 }
 
 //função para validar se os campos estão preenchidos corretamente antes de editar
-function js_validaAntesEnvio(){
+function js_validaAntesEnvio(el){
 	var varInpDataInicio = document.getElementById("inpDataInicio");
 	var varInpHoraInicio = document.getElementById("inpHoraInicio"); 
 	var varInpHoraFim = document.getElementById("inpHoraFim"); 
@@ -683,11 +687,15 @@ function js_validaAntesEnvio(){
 	var varSelAtiv = document.getElementById("selAtiv");
 	var varSelCausaRetrabalho = document.getElementById("selCausaRetrabalho");
 	var varInpServCampo = document.getElementById("inpServCampo");
-	var varObservacao = document.getElementById("observacao");	
+	var varObservacao = document.getElementById("inpObs");	
 
 	try {
 		if (varInpHoraInicio.value > varInpHoraFim.value) {
 			throw "Hora início está maior que a hora final.";
+		}
+
+		if (varInpHoraInicio.value == "" || varInpHoraFim.value == "") {
+			throw "Preencha as horas corretamente.";
 		}
 
 		if ($("#inpHoraInicio").val().indexOf("-") != -1 || $("#inpHoraFim").val().indexOf("-") != -1) {
@@ -721,9 +729,10 @@ function js_validaAntesEnvio(){
 		if (varObservacao.value == "") {//insere um espaço na string para não enviar null
 			varObservacao.value = " ";
 		}
+		return true;
 
 	} catch (e) { //cancela o envio do formulário
-		evento.preventDefault();
+		el.preventDefault();
 		bootbox.alert({
 			buttons: {
 		        ok: {
@@ -735,5 +744,6 @@ function js_validaAntesEnvio(){
 		    title: "Edição Inválida",
 		    message: e
 		});
+		return false;
 	}
 }
