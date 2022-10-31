@@ -274,7 +274,7 @@ function js_recuperaDadosParteAtiv(campoOrigem, campoFiltro){
 		}
 	
 		function interna_atualizaCampo(dados) {
-			var desc, cod, idValor = {}, legFilial, legFilialLinha, secaoAtual;			
+			var desc, cod, idValor = {}, arrSecoes = [], legFilial, legFilialLinha, secaoAtual;			
 			secaoAtual = document.getElementById("inpSecao").value; //secao selecionada
 
 			//exclui options anteriores do botão
@@ -307,6 +307,7 @@ function js_recuperaDadosParteAtiv(campoOrigem, campoFiltro){
 
 			dados.filter(el => {
 				if (cod == "PARTE" || campoFiltro == el["PARTE"]) {				
+					arrSecoes.findIndex(elSecao => elSecao == el["CODSECAO"]) == -1? arrSecoes.push(el['CODSECAO']):''; //grava as seções para validar sorocaba					
 					codAtual = el[cod];
 					descAtual = el[desc];
 					posicaoAtual = {[codAtual]:descAtual};
@@ -316,12 +317,13 @@ function js_recuperaDadosParteAtiv(campoOrigem, campoFiltro){
 				}
 			});
 			valorFim = Object.entries(idValor[cod]);
-			for (var i = 0; i < valorFim.length; i++) {
+			arrSecoes.forEach(linhaSecao => {				
 				//abreviação de seções para sorocaba
-				legFilialLinha = Object.getOwnPropertyDescriptor(legFilial, secaoAtual);
-				$("#" + campoOrigem.id).append("<option value='" + valorFim[i][0] + "'>" + (legFilialLinha == undefined?'':legFilialLinha.value) + ' - ' + valorFim[i][1] + "</option>");
-			}
-	
+				legFilialLinha = Object.getOwnPropertyDescriptor(legFilial, linhaSecao);
+				for (var i = 0; i < valorFim.length; i++) {
+					$("#" + campoOrigem.id).append("<option value='" + valorFim[i][0] + "'>" + (legFilialLinha == undefined?'':legFilialLinha.value + ' - ') + valorFim[i][1] + "</option>");
+				}
+		});	
 			$("#" + campoOrigem.id).selectpicker('refresh');		
 		}	
 	}	

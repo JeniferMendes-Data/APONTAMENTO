@@ -1,17 +1,18 @@
 <?php
 
 class Config{
-    public $server;
-    public $connectionInfo;
-    public $diaApontRetroativo;
-    public $OSGenerica;
-    public $nomeBaseRM;
-    public $usuarioIntegracaoRM;
-    public $senhaIntegracaoRM;
-    public $enderecoSOAP;
-    public $OSBloqueada;
-    public $StatusOSAtv;
-    public $legSecaoFilial;
+    public $server; //IP do servidor do banco de dados - STRING
+    public $connectionInfo; //string de conexão com o banco na base correta - STRING
+    public $diaApontRetroativo; //permitir/negar apontamento retroativo - BOOLEANO
+    public $OSGenerica; //lista de OS's de parada - ARRAY
+    public $nomeBaseRM; //nome da base do RM para conexão - STRING
+    public $usuarioIntegracaoRM; //usuário que ficará gravado no RM e que sera usado para autenticar - STRING
+    public $senhaIntegracaoRM; //senha da autenticação no RM - STRING
+    public $enderecoSOAP; //IP da máquina que está rodando a webservice do RM - STRING
+    public $OSBloqueada; //lista de OS's que não podem receber apontamento - ARRAY
+    public $StatusOSAtv; //lista de status de OS que permitem apontamento - ARRAY
+    public $legSecaoFilial; //lista de legenda de seção para parte/atividade de Sorocaba - ARRAY
+    public $secaoFilial; //lista com o ID das seções da Filial - STRING
 
     //construtor da classe
     function __construct(){
@@ -29,7 +30,8 @@ class Config{
         $this->usuarioIntegracaoRM = "APONTAMENTO";
         $this->senhaIntegracaoRM = "A@3D5A7t7A";
         $this->enderecoSOAP = "http://192.168.0.22:8051/";
-        $this->legSecaoFilial =  array( "02.01.013"=>"CALD", "02.01.004"=>"MECA", "02.01.007"=>"POLO", "02.01.031"=>"ISOBOB");
+        $this->legSecaoFilial =  array( "0150"=>"CALD", "0153"=>"MECA", "0155" =>"BARR", "0164"=>"CARP", "0151"=>"IMPR", "0152"=>"LAB", "0160"=>"PINT", "0175"=>"POLO", "0177" => "PREP", "0158"=>"USIN", "0162"=>"ISOBOB");
+        $this->secaoFilial = "153, 155, 175, 152, 160, 150, 164, 158, 151, 177, 162";
     }
 }
 ?>

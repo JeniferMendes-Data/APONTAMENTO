@@ -39,6 +39,9 @@ function json_postRecuperaDadosParteAtiv() {
     $idSecao = "";
     $result = querySelect_idSecao($_POST["recuperaDadosParteAtiv"]["codSecao"]);
     $idSecao .= $result[0]["ID"];
+    $arr = explode(",", $config->secaoFilial);
+    $result = in_array($idSecao, $arr);
+    $result == true?$idSecao = $config->secaoFilial:'';
     $jsonRetorno = querySelect_lista($idSecao);
 
     if ((is_countable($jsonRetorno)?count($jsonRetorno):0) == 0) {
