@@ -31,7 +31,7 @@ class Config{
         $this->senhaIntegracaoRM = "A@3D5A7t7A";
         $this->enderecoSOAP = "http://192.168.0.22:8051/";
         $this->legSecaoFilial =  array( "0150"=>"CALD", "0153"=>"MECA", "0155" =>"BARR", "0164"=>"CARP", "0151"=>"IMPR", "0152"=>"LAB", "0160"=>"PINT", "0175"=>"POLO", "0177" => "PREP", "0158"=>"USIN", "0162"=>"ISOBOB");
-        $this->secaoFilial = "153, 155, 175, 152, 160, 150, 164, 158, 151, 177, 162";
+        $this->secaoFilial = "150, 151, 152, 153, 155, 158, 160, 162, 164, 175, 177";
     }
 }
 ?>

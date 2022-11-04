@@ -275,6 +275,7 @@ function js_recuperaDadosParteAtiv(campoOrigem, campoFiltro){
 	
 		function interna_atualizaCampo(dados) {
 			var desc, cod, idValor = {}, arrSecoes = [], legFilial, legFilialLinha, secaoAtual;			
+			var nomeNaLegenda = document.getElementById("selParte").options[document.getElementById("selParte").selectedIndex].text.split(' - ')[0];
 			secaoAtual = document.getElementById("inpSecao").value; //secao selecionada
 
 			//exclui options anteriores do botão
@@ -304,26 +305,32 @@ function js_recuperaDadosParteAtiv(campoOrigem, campoFiltro){
 			Object.assign(idValor, {[cod]:{}});
 			
 			legFilial = dados[dados.length -1]; //abreviação de seções para sorocaba
-
+			var lengLegenda = document.getElementById("selParte").options[document.getElementById("selParte").selectedIndex].text.split(' - ').length;
+			var legIdSec, secFilial, legenda;
+			if (lengLegenda > 1) {
+				legenda = document.getElementById("selParte").options[document.getElementById("selParte").selectedIndex].text.split(' - ')[0];
+				secFilial = Object.values(legFilial).find(el => el == legenda);
+				legIdSec = Object.keys(legFilial)[Object.values(legFilial).findIndex(el => el == secFilial)];	
+			}else{
+				legIdSec = 0;
+			}			
 			dados.filter(el => {
-				if (cod == "PARTE" || campoFiltro == el["PARTE"]) {				
-					arrSecoes.findIndex(elSecao => elSecao == el["CODSECAO"]) == -1? arrSecoes.push(el['CODSECAO']):''; //grava as seções para validar sorocaba					
+				if (cod == "PARTE" || (campoFiltro == el["PARTE"] && (lengLegenda == 1 || legIdSec == el["CODSECAO"]))){
+					arrSecoes.findIndex(elSecao => elSecao == el["CODSECAO"]) == -1? arrSecoes.push(el['CODSECAO']):''; //grava as seções para validar sorocaba										
+					idSecaoAtual = el["CODSECAO"];
+					legFilialLinha = Object.getOwnPropertyDescriptor(legFilial, idSecaoAtual);
 					codAtual = el[cod];
-					descAtual = el[desc];
-					posicaoAtual = {[codAtual]:descAtual};
+					descAtual = (legFilialLinha == undefined?'':legFilialLinha.value + ' - ') + el[desc];					
+					posicaoAtual = {[descAtual]:[codAtual, idSecaoAtual]};					
 					if (codAtual != undefined && descAtual != undefined && posicaoAtual != undefined) {
 						Object.assign(idValor[cod],  posicaoAtual);						
 					}
 				}
 			});
-			valorFim = Object.entries(idValor[cod]);
-			arrSecoes.forEach(linhaSecao => {				
-				//abreviação de seções para sorocaba
-				legFilialLinha = Object.getOwnPropertyDescriptor(legFilial, linhaSecao);
+			valorFim = Object.entries(idValor[cod]);			
 				for (var i = 0; i < valorFim.length; i++) {
-					$("#" + campoOrigem.id).append("<option value='" + valorFim[i][0] + "'>" + (legFilialLinha == undefined?'':legFilialLinha.value + ' - ') + valorFim[i][1] + "</option>");
+					$("#" + campoOrigem.id).append("<option value='" + valorFim[i][1][0] + "'>" + valorFim[i][0] + "</option>");					
 				}
-		});	
 			$("#" + campoOrigem.id).selectpicker('refresh');		
 		}	
 	}	
@@ -513,6 +520,12 @@ function js_validaEnvioApont(evento, sup, usuLogado){
 				varInpServCampo.value = "S";
 			}else{
 				varInpServCampo.value = "N";
+			}
+			
+			//insere a abreviação do apontamento da filial na obs
+			var lengLegenda = document.getElementById("selParte").options[document.getElementById("selParte").selectedIndex].text.split(' - ').length;
+			if (lengLegenda > 1) {
+				varObservacao.value = "### " + document.getElementById("selParte").options[document.getElementById("selParte").selectedIndex].text.split(' - ')[0] + " ### - ".concat(varObservacao.value);
 			}
 
 			if (varObservacao.value == "") {//insere um espaço na string para não enviar null

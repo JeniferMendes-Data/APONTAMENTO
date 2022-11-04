@@ -162,7 +162,7 @@ include_once $_SERVER["DOCUMENT_ROOT"].'/functions/global_functions.php';
 
 			//verifica se colaborador pode aprovar
 			var sup = <?php if (isset($_SESSION["APV"])){ echo $_SESSION["APV"];}else{ echo 0;} ?>;
-			funIniciaTimeGrid(sup);
+			funIniciaTimeGrid(sup, <?php echo $_SESSION["APT_RET"]; ?>, <?php echo $_SESSION["APT_GES"]; ?>);
 			
 			//inicializa os campos de hora
 			$("#inpHoraFim, #inpHoraInicio").inputmask("datetime",{placeholder:"--:--", clearMaskOnLostFocus:false, inputFormat: "HH:MM"});

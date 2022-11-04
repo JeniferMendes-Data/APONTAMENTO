@@ -88,22 +88,26 @@ function post_getApontar($idApont, $valida, $valoresEdit = "") {
         $insertBanco = [];       
 
         if ($idApont == "NULL") {//apontar novo
-            $valida = ((isset($_SESSION['APV']) && $_SESSION['APV'] == 1)?"A":"P");
-            //converter hora
-            $dataFormatInicio = date_format(date_create_from_format('d/m/Y H:i:s', $_POST["inpDataInicio"]. " ".$_POST["inpHoraInicio"].":02"), 'Y-m-d H:i:s');
-            $dataFormatFim = date_format(date_create_from_format('d/m/Y H:i:s', $_POST["inpDataFim"]. " ".$_POST["inpHoraFim"].":01"), 'Y-m-d H:i:s');
+            if ($_SERVER["QUERY_STRING"] == "pag=apontar") {
+                $valida = ((isset($_SESSION['APV']) && $_SESSION['APV'] == 1)?"A":"P");
+                //converter hora
+                $dataFormatInicio = date_format(date_create_from_format('d/m/Y H:i:s', $_POST["inpDataInicio"]. " ".$_POST["inpHoraInicio"].":02"), 'Y-m-d H:i:s');
+                $dataFormatFim = date_format(date_create_from_format('d/m/Y H:i:s', $_POST["inpDataFim"]. " ".$_POST["inpHoraFim"].":01"), 'Y-m-d H:i:s');
 
-            //informa null em campos vazios
-            $inpServCampo = (interna_verificaCampoNull($_POST["inpServCampo"]) == "NULL")?"N":$_POST["inpServCampo"];
-            $selCausaRetrabalho = (interna_verificaCampoNull($_POST["selCausaRetrabalho"]) == "NULL")?"NA":($_POST["selCausaRetrabalho"]);
-            $selParte = interna_verificaCampoNull($_POST["selParte"]);
-            $selAtiv = interna_verificaCampoNull($_POST["selAtiv"]);
-            $observacao = interna_verificaCampoNull($_POST["observacao"]);
-            $inpSecao = interna_verificaCampoNull($_POST["inpSecao"]);
-            $inpNumOs = $_POST["inpNumOS"];
-            $chapa = $_POST["inpChapa"];
-            $hLancamento = date('Y-m-d H:i:s');
-            $resp_apv = ((isset($_SESSION['APV']) && $_SESSION['APV'] == 1)?$_SESSION['usuarioLogado']:"NULL");
+                //informa null em campos vazios
+                $inpServCampo = (interna_verificaCampoNull($_POST["inpServCampo"]) == "NULL")?"N":$_POST["inpServCampo"];
+                $selCausaRetrabalho = (interna_verificaCampoNull($_POST["selCausaRetrabalho"]) == "NULL")?"NA":($_POST["selCausaRetrabalho"]);
+                $selParte = interna_verificaCampoNull($_POST["selParte"]);
+                $selAtiv = interna_verificaCampoNull($_POST["selAtiv"]);
+                $observacao = interna_verificaCampoNull($_POST["observacao"]);
+                $inpSecao = interna_verificaCampoNull($_POST["inpSecao"]);
+                $inpNumOs = $_POST["inpNumOS"];
+                $chapa = $_POST["inpChapa"];
+                $hLancamento = date('Y-m-d H:i:s');
+                $resp_apv = ((isset($_SESSION['APV']) && $_SESSION['APV'] == 1)?$_SESSION['usuarioLogado']:"NULL");
+            }else{
+                throw new Exception("Error Processing Request - CODE:0666", 1);                
+            }            
         }elseif ($valida == 'E'){ //editar
             $apont = querySelect_buscaApontamentoID($idApont);
             if (!isset($apont)) {//apontamento não encontrado
@@ -173,7 +177,8 @@ function post_getApontar($idApont, $valida, $valoresEdit = "") {
                 "ID_APONTAMENTO" => $idApont,
                 "CODFILIAL" => $origemSecao[0]["CODFILIAL"],
                 "CODCOLIGADA" => $origemSecao[0]["CODCOLIGADA"],
-                "RESP_APV" => $resp_apv
+                "RESP_APV" => $resp_apv,
+                "ENDORIGEM" => $_SERVER['REMOTE_ADDR'],
             ));
 
             //manipula o banco 

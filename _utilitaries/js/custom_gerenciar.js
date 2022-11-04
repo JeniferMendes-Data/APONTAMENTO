@@ -1,5 +1,5 @@
 //função para carregar os scripts iniciais da tela view/gerenciar.php
-function funIniciaTimeGrid(sup) {
+function funIniciaTimeGrid(sup, aptRet, aptGes) {
 	var varApontTime = document.getElementById('divApontTime');
 	var varTimeGrid = new FullCalendar.Calendar(varApontTime, {
 		themeSystem: 'bootstrap5',
@@ -17,14 +17,14 @@ function funIniciaTimeGrid(sup) {
 			left:'',			
 			right: 'timeGridDay,listDay'
 		},
-		eventOrder: document.getElementById("selAcao").value == 2?"title":"start",
+		eventOrder: document.getElementById("selAcao").value == 2?"ID_USUARIO,start":"start",
 		loading: function (parStatus) {
 			if (parStatus) {
 				$('#divCarregando').show();
 			}
 		},
 		eventClick: function(evento) {
-			document.getElementById("selAcao").value == 2?interna_selecionaAprovacao(evento):interna_editApont(evento, sup);
+			document.getElementById("selAcao").value == 2?interna_selecionaAprovacao(evento):interna_editApont(evento, sup, aptRet, aptGes);
 		}
 	});
 	varTimeGrid.setOption('locale', 'pt-br');
@@ -137,7 +137,7 @@ function interna_atualizaEventos(json, data, acao, login) {
 
 	if (acao==2) { //aprovar
 		global_calendario.changeView('listDay');
-		global_calendario.setOption('eventOrder','title'); //ordena pelo nome
+		global_calendario.setOption('eventOrder','ID_USUARIO, start'); //ordena pelo nome
 		varClassName='aprov';
 		if (login == 'TODOS') {
 			varCondicao='element["VALIDA"] == "P"';			
@@ -295,9 +295,9 @@ function js_alteraFiltroNome(login) {
 }
 
 //função para montar o modal de edição e aprovação de apontamento
-function interna_editApont(dadosApont, sup) {
+function interna_editApont(dadosApont, sup, aptRet, aptGes) {
 	var hoje = new Date(), ontem = new Date();
-	var readOnly = true, required = false, aprov = false, enviarEdit = false, msgRetorno = "";
+	var readOnly = true, required = false, aprov = false, enviarEdit = false, msgRetorno = "", permissao, statusApt, dataApt;
 	var botaoFechar = document.getElementById("btnFechar");
 	var botaoEditar = document.getElementById("btnEditar");
 	var botaoAprovar = document.getElementById("btnAprovar");
@@ -334,44 +334,68 @@ function interna_editApont(dadosApont, sup) {
 	campos.inpServCampo.value = !dadosApont.event.extendedProps.SERV_CAMPO?"N":dadosApont.event.extendedProps.SERV_CAMPO;	
 	campos.inpServCampo.checked = campos.inpServCampo.value == "S"?true:false;
 	campos.inpSecao.value = !dadosApont.event.extendedProps.SECAO?"Não informado":dadosApont.event.extendedProps.SECAO;		
-	campos.inpObs.value = !dadosApont.event.extendedProps.SECAO?"":dadosApont.event.extendedProps.OBS;		
-	
+	campos.inpObs.value = !dadosApont.event.extendedProps.OBS?"":dadosApont.event.extendedProps.OBS;		
+	statusApt = dadosApont.event.extendedProps.STATUS;
+	dataApt = new Date(dadosApont.event.extendedProps.H_INICIO.date);
 
+	//valida nível de permissão
+	if (aptRet == 1) {
+		permissao = 0;
+	}else if (aptGes == 1){
+		permissao = 1;
+	}else if (sup == 1){
+		permissao = 2;
+	}else{
+		permissao = 3;
+	}
 
-	if (!dadosApont.event.extendedProps.SECAO) {//permite edicao apenas em apontamentos que possuem o campo SECAO_APONT na tabela preenchidos
-		readOnly = true;
-		required = false;
-		aprovarDisplay = 'none';
-		editarDisplay = 'none';
-		fecharInnerHTML = 'Fechar';
-	} else if (dadosApont.event.extendedProps.STATUS && dadosApont.event.extendedProps.STATUS == 'P') { //apontamento pendente permite edição		
-		if (sup && campos.inpDataApt.value <= ontem.toLocaleDateString('en-GB')) {//habilita botão de edicao e aprovação
-			readOnly = false;
-			required = true;
-			aprovarDisplay= 'block';
-			editarDisplay = 'block';
-			fecharInnerHTML = 'Cancelar';
-		}else if (!sup && campos.inpDataApt.value == hoje.toLocaleDateString('en-GB')){ //habilita edicao do colaborador
-			readOnly = false;
-			required = true;
-			aprovarDisplay = 'none';
-			editarDisplay = 'block';
-			fecharInnerHTML = 'Cancelar';
-		}else{//Fora do período permitido para edição
+	if ((permissao == 3 && 
+			(statusApt == 'P' || statusApt == 'I') && 
+			dataApt.getDate() == hoje.getDate() &&
+			dataApt.getUTCMonth() -1 == hoje.getUTCMonth() -1) || 
+		(permissao <= 2 &&
+			statusApt == 'I' &&
+			dataApt <= 5 && 
+			dataApt.getUTCMonth() -1 == hoje.getUTCMonth() -2 )) { 
+			//colaborador no dia atual ou sup com apontamento incompleto até o dia 5 para apontamento do mes anterior 
+				readOnly = false;
+				required = true;
+				aprovarDisplay = 'none';
+				editarDisplay = 'block';
+				fecharInnerHTML = 'Cancelar';
+	}else if (permissao <= 2 &&
+		statusApt == 'P' &&
+		dataApt.getDate() == hoje.getDate() &&
+		dataApt.getUTCMonth()-1 == hoje.getUTCMonth()-1) {
+	//sup para apontamento pendente no dia de hoje para o periodo atual
 			readOnly = true;
 			required = false;
-			aprovarDisplay = (sup)?'block':'none';
-			editarDisplay = 'block';
+			aprovarDisplay = 'block';
+			editarDisplay = 'none';
 			fecharInnerHTML = 'Fechar';
-		}
-	}else{//habilita somente consulta
+	}else if ((permissao <= 2 &&
+				statusApt == 'P' &&
+				(dataApt.getUTCMonth() -1 == hoje.getUTCMonth() -1 || (hoje.getDate() <= 5 && dataApt.getUTCMonth() -1 == hoje.getUTCMonth() -2))) ||
+			(permissao == 0 &&
+				dataApt.getUTCMonth() -1 < hoje.getUTCMonth() -2) ||
+			(permissao <= 1 &&
+				dataApt.getDate() > 5 &&
+				dataApt.getUTCMonth() -1 == hoje.getUTCMonth() -2)) {
+			//sup para apontamento pendente no periodo atual ou apontamento no mes anterior com o dia do mes atual menor que 5
+			//aptret para meses anteriores
+			//gestão para apontamentos do periodo anterior
+					readOnly = false;
+					required = true;
+					aprovarDisplay = 'block';
+					editarDisplay = 'block';
+					fecharInnerHTML = 'Cancelar';
+	}else{ //todos os apontamentos que não satisfazem nenhuma das condições anteriores
 		readOnly = true;
 		required = false;
 		aprovarDisplay = 'none';
 		editarDisplay = 'none';
 		fecharInnerHTML = 'Fechar';
-	}
-	
+	}	
 
 	divModal.show();
 
