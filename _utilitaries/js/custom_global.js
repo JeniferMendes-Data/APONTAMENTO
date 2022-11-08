@@ -39,7 +39,7 @@ function js_DataApontRetroativo(data, permissao) {
 	var dataCalendario;	
 	
 	if (permissao){//APT_RET - PERMISSÃO PARA APONTAR/APROVAR EM QUALQUER DATA RETROATIVA
-		dataCalendario = new Date(dataAtual.getFullYear(), 1, 1);
+		dataCalendario = new Date(dataAtual.getFullYear(), 0, 1);
 	}else if (data == 1 || dataAtual.getDate() <= 5){ //minDate verifica se o parâmetro de lançamento retroativo no _utilitaries->config->ApontRetroativo está setado como true ou se o dia atual é anterior ao dia 5 para liberar apontamento no mês anterior
 		dataCalendario = new Date(dataAtual.getFullYear(), dataAtual.getMonth()-1, 1);
 	}else{
@@ -47,4 +47,11 @@ function js_DataApontRetroativo(data, permissao) {
 	}
 	
 	return dataCalendario;
+}
+
+//função para ordenar options de um select apos serem inseridos no campo
+function global_ordenaOption(idSel){
+	$("#" + idSel).html($("#" + idSel +" option").sort(function (a, b) {
+		return a.text == b.text ? 0 : a.text < b.text ? -1 : 1
+	}));    
 }

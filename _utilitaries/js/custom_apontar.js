@@ -347,9 +347,11 @@ function js_recuperaNomeSup(padraoNome = "", padraoChapa = "" ) {
 		nomes.sort();
 		if (nomes.length > 0) {
 			for (var i = 0; i < nomes.length; i++) {
-				$("#selNome").append("<option value='" + nomes[i]['NOME'] + "'>" + nomes[i]['NOME'] + "</option>");
+				var demitido = nomes[i]['STATUS'] == 'D'?"class='text-danger'":"";
+				$("#selNome").append("<option " + demitido + " value='" + nomes[i]['NOME'] + "'>" + nomes[i]['NOME'] + "</option>");
 			}
-		}		
+		}	
+		global_ordenaOption("selNome");	
 		$("#selNome").selectpicker('refresh');
 		$('#selNome').selectpicker('val', '');
 
@@ -382,6 +384,7 @@ function js_recuperaSecaoSup(campoID, login) {
 						$("#" + campoID.id).append("<option value='" + jsonSecaoNomeSup[i]['SECAO_DESCRICAO'] + "'>" + jsonSecaoNomeSup[i]['SECAO_DESCRICAO'] + "</option>");
 					}
 				}
+				global_ordenaOption(campoID.id);
 				$("#" + campoID.id).selectpicker('refresh');				
 				js_recuperaNomeSup(); //carrega a lista de nomes a primeira vez na tela
 			}
@@ -445,6 +448,12 @@ function js_addEventosIniciais() {
 		js_alteraIDDesc(document.getElementById("inpChapa"),  document.getElementById("selNome").value);
 		if (jsonSecaoNomeSup !== undefined) {
 			var usu = jsonSecaoNomeSup.find(element => element['NOME'] == document.getElementById("selNome").value)
+			if (usu != undefined && usu['STATUS'] == 'D') {//define data máxima no calendario para colab demitido
+				$("#inpDataInicio").val('');
+				$('#inpDataInicio').datepicker('setEndDate', new Date(usu['DT_DEMISSAO'].date)).datepicker('update')
+			}else{
+				$("#inpDataInicio").datepicker('setEndDate', new Date()).datepicker('update');
+			}
 			js_ApontarValidaHora(1,usu==undefined?"":usu['LOGIN']);	
 		}		
 	});
@@ -556,4 +565,9 @@ function js_validaEnvioApont(evento, sup, usuLogado){
 		    message: e
 		});
 	}
+}
+
+//função para definir maxDate no calendario para funcionários demitidos
+function interna_maxDateCalendar(data) {
+
 }

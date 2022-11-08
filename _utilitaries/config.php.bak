@@ -1,0 +1,37 @@
+<?php
+
+class Config{
+    public $server; //IP do servidor do banco de dados - STRING
+    public $connectionInfo; //string de conexão com o banco na base correta - STRING
+    public $diaApontRetroativo; //permitir/negar apontamento retroativo - BOOLEANO
+    public $OSGenerica; //lista de OS's de parada - ARRAY
+    public $nomeBaseRM; //nome da base do RM para conexão - STRING
+    public $usuarioIntegracaoRM; //usuário que ficará gravado no RM e que sera usado para autenticar - STRING
+    public $senhaIntegracaoRM; //senha da autenticação no RM - STRING
+    public $enderecoSOAP; //IP da máquina que está rodando a webservice do RM - STRING
+    public $OSBloqueada; //lista de OS's que não podem receber apontamento - ARRAY
+    public $StatusOSAtv; //lista de status de OS que permitem apontamento - ARRAY
+    public $legSecaoFilial; //lista de legenda de seção para parte/atividade de Sorocaba - ARRAY
+    public $secaoFilial; //lista com o ID das seções da Filial - STRING
+
+    //construtor da classe
+    function __construct(){
+        $this->valorConfig();
+    }
+
+    function valorConfig(){
+        $this->server = "192.168.0.10";
+        $this->connectionInfo = array( "Database"=>"DSS_TEST", "UID"=>"APONTAMENTO", "PWD"=>"A@3D5A7t7a" );
+        $this->nomeBaseRM = "CORPORERM_ONTEM";
+        $this->diaApontRetroativo = "true";
+        $this->OSGenerica = "'000000002','000000006','000000009','000000012','000000015','000000018','000000023','000000024','000000025','000000026','000000027','000000028','000000029','000000030','000000035','000000037','000000042','000000045','000000046','000000047','000000048','000000049'";
+        $this->OSBloqueada = "'000000000','000000001','000000003','000000004','000000005','000000007','000000008','000000010','000000011','000000013','000000014','000000016','000000017','000000019','000000020','000000021','000000022','000000032','000000033','000000036','000000041','000000050','000000776'";
+        $this->StatusOSAtv = "0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 17, 18, 19, 20";
+        $this->usuarioIntegracaoRM = "APONTAMENTO";
+        $this->senhaIntegracaoRM = "A@3D5A7t7A";
+        $this->enderecoSOAP = "http://192.168.0.22:8051/";
+        $this->legSecaoFilial =  array( "0150"=>"CALD", "0153"=>"MECA", "0155" =>"BARR", "0164"=>"CARP", "0151"=>"IMPR", "0152"=>"LAB", "0160"=>"PINT", "0175"=>"POLO", "0177" => "PREP", "0158"=>"USIN", "0162"=>"ISOBOB");
+        $this->secaoFilial = "150, 151, 152, 153, 155, 158, 160, 162, 164, 175, 177";
+    }
+}
+?>

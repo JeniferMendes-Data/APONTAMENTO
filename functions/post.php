@@ -26,37 +26,60 @@
 function post_getLogin() {
     //Botão de Acesso do sistema index.php
     if(isset($_POST['acessar'])){
+        $acesso = false;
         $login = $_POST['login'];
-        $senha = $_POST['senha'];
-        $resultado_usuario = querySelect_login($login, $senha);
-        if(isset($resultado_usuario) && isset($resultado_usuario[0]['NOME'])){
-            $_SESSION['usuarioLogado'] = $resultado_usuario[0]['LOGIN'];
-            $_SESSION['nomeUsuario'] = $resultado_usuario[0]['NOME'];
-            $_SESSION['chapa'] = $resultado_usuario[0]['CHAPA'];
-            $_SESSION['secaoDesc'] = $resultado_usuario[0]['PSECAO_DESCRICAO'];
-            $_SESSION['codSecao'] = $resultado_usuario[0]['PFUNC_CODSECAO'];
-            $_SESSION['codPessoa'] = $resultado_usuario[0]['PPESSOA_CODIGO'];
-            $_SESSION['codEquipe'] = $resultado_usuario[0]['PFUNC_CODEQUIPE'];
-            $_SESSION['coligada'] = $resultado_usuario[0]['PSECAO_CODCOLIGADA'];
-            $_SESSION['filial'] = $resultado_usuario[0]['PSECAO_CODFILIAL'];
-            //carrega tipo de permissão
-            $tipoPermissao = querySelect_listaParam();
-            if(isset($tipoPermissao)){
-                foreach ($tipoPermissao as $nomePermissao) {
-                    $_SESSION[$nomePermissao["TIPO"]] = $resultado_usuario[0][$nomePermissao["TIPO"]];
-                }
-            }
-            $_SESSION['msg']='sucessoLogin';
-            header("Location: ../index.php");
-            die();
+        $pdwTL = $_POST['senha'];
+        $resultado_usuario = querySelect_login($login);
+        if(isset($resultado_usuario) && isset($resultado_usuario[0]['NOME'])){ //usuario encontrado
+            $pwdBD = $resultado_usuario[0]['SENHA'];
+            if (strlen($pwdBD) == 4 && $pwdBD == $pdwTL) {//primeiro acesso
+                $opt = [
+                    'cost' => 12,
+                ];
+                $pdwHash = password_hash($pdwTL, PASSWORD_BCRYPT, $opt);
+                queryUpdate_hashLogin($login, $pdwHash);
+                $acesso = true;
+            }else if (password_verify($pdwTL, $pwdBD)){//valida o hash
+                $acesso = true;
+            }else{
+                $acesso = false;
+                $_SESSION['msg']='erroLogin';
+                $_SESSION['usuario'] = $login;
+                header("Location: ../index.php");
+                die();
+            }            
         }else{
+            $acesso = false;
             $_SESSION['msg']='erroLogin';
             $_SESSION['usuario'] = $login;
             header("Location: ../index.php");
             die();
         }
     }else{
+        $acesso = false;
         $_SESSION['msg']='erro';
+        header("Location: ../index.php");
+        die();
+    }
+
+    if ($acesso) {//validação ok
+        $_SESSION['usuarioLogado'] = $resultado_usuario[0]['LOGIN'];
+        $_SESSION['nomeUsuario'] = $resultado_usuario[0]['NOME'];
+        $_SESSION['chapa'] = $resultado_usuario[0]['CHAPA'];
+        $_SESSION['secaoDesc'] = $resultado_usuario[0]['PSECAO_DESCRICAO'];
+        $_SESSION['codSecao'] = $resultado_usuario[0]['PFUNC_CODSECAO'];
+        $_SESSION['codPessoa'] = $resultado_usuario[0]['PPESSOA_CODIGO'];
+        $_SESSION['codEquipe'] = $resultado_usuario[0]['PFUNC_CODEQUIPE'];
+        $_SESSION['coligada'] = $resultado_usuario[0]['PSECAO_CODCOLIGADA'];
+        $_SESSION['filial'] = $resultado_usuario[0]['PSECAO_CODFILIAL'];
+        //carrega tipo de permissão
+        $tipoPermissao = querySelect_listaParam();
+        if(isset($tipoPermissao)){
+            foreach ($tipoPermissao as $nomePermissao) {
+                $_SESSION[$nomePermissao["TIPO"]] = $resultado_usuario[0][$nomePermissao["TIPO"]];
+            }
+        }
+        $_SESSION['msg']='sucessoLogin';
         header("Location: ../index.php");
         die();
     }
@@ -94,6 +117,9 @@ function post_getApontar($idApont, $valida, $valoresEdit = "") {
                 $dataFormatInicio = date_format(date_create_from_format('d/m/Y H:i:s', $_POST["inpDataInicio"]. " ".$_POST["inpHoraInicio"].":02"), 'Y-m-d H:i:s');
                 $dataFormatFim = date_format(date_create_from_format('d/m/Y H:i:s', $_POST["inpDataFim"]. " ".$_POST["inpHoraFim"].":01"), 'Y-m-d H:i:s');
 
+                if ($dataFormatInicio == '1900-01-01 00:00:00' || $dataFormatFim == '1900-01-01 00:00:00') {//erro na conversão de data
+                    throw new Exception("Erro na conversão de data, favor recarregar a página e inserir o apontamento novamente!");                
+                }
                 //informa null em campos vazios
                 $inpServCampo = (interna_verificaCampoNull($_POST["inpServCampo"]) == "NULL")?"N":$_POST["inpServCampo"];
                 $selCausaRetrabalho = (interna_verificaCampoNull($_POST["selCausaRetrabalho"]) == "NULL")?"NA":($_POST["selCausaRetrabalho"]);
@@ -180,6 +206,11 @@ function post_getApontar($idApont, $valida, $valoresEdit = "") {
                 "RESP_APV" => $resp_apv,
                 "ENDORIGEM" => $_SERVER['REMOTE_ADDR'],
             ));
+
+            //correção para responsável de criação em branco
+            if ($insertBanco[0]["RESP_CRIACAO"] == '') {
+                throw new Exception("Apontamento não inserido devido a um erro no usuário logado. Favor atualizar a página e tentar novamente!");                
+            }
 
             //manipula o banco 
             $conn = query_beginTransaction(); //abre a transação

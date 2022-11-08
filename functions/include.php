@@ -22,10 +22,10 @@ function include_head($titulo){
                 <script src="http://'.$_SERVER["HTTP_HOST"].'/_utilitaries/js/jquery-3.6.0.min.js"></script>
                 <script src="http://'.$_SERVER["HTTP_HOST"].'/_utilitaries/js/jquery-ui.min.js"></script>
                 <script src="http://'.$_SERVER["HTTP_HOST"].'/_utilitaries/js/jquery.inputmask.min.js"></script>
-                <script src="http://'.$_SERVER["HTTP_HOST"].'/_utilitaries/js/bootstrap-datepicker.min.js"></script>
-                <script src="http://'.$_SERVER["HTTP_HOST"].'/_utilitaries/js/bootstrap-datepicker.pt-BR.min.js"></script>
                 <script src="http://'.$_SERVER["HTTP_HOST"].'/_utilitaries/js/bootstrap.bundle.min.js"></script>
                 <script src="http://'.$_SERVER["HTTP_HOST"].'/_utilitaries/js/bootstrap-select.min.js"></script>
+                <script src="http://'.$_SERVER["HTTP_HOST"].'/_utilitaries/js/bootstrap-datepicker.min.js"></script>
+                <script src="http://'.$_SERVER["HTTP_HOST"].'/_utilitaries/js/bootstrap-datepicker.pt-BR.min.js"></script>
                 <script src="http://'.$_SERVER["HTTP_HOST"].'/_utilitaries/js/bootbox.min.js"></script>
                 <script src="http://'.$_SERVER["HTTP_HOST"].'/_utilitaries/js/bootbox.locales.min.js"></script>
                 <script src="http://'.$_SERVER["HTTP_HOST"].'/_utilitaries/js/custom_global.js"></script>

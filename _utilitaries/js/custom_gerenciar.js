@@ -110,6 +110,7 @@ function js_recuperaNomeIDSup(id_sup) {
 				for (var i = 0; i < jsonNomes.length; i++) { //alimenta o campo do select de seção na tela
 					$("#" + id_sup.id).append("<option value='" + jsonNomes[i]['LOGIN'] + "'>" + jsonNomes[i]['NOME'] + "</option>");					
 				}
+				global_ordenaOption(id_sup.id);
 				$("#" + id_sup.id).selectpicker('refresh');
 				$("#" + id_sup.id).off("shown.bs.select"); //remove o evento de click para não carregar os valores novamente no botão
 				//carrega o TimeGrid a primeira vez na tela para o supervisor
@@ -229,12 +230,12 @@ function interna_atualizaContagem(json, data, sup) {
 	
 	arrColab.sort();
 	arrSecao.sort();
-	arrSecao.forEach(el => { //carrega collapse de seção
+	arrSecao.forEach(function (el, i){ //carrega collapse de seção
 		itemC = "";		
 		var idSecao = el.split(" ").join("").toLocaleLowerCase();
 		//remove caracteres especiais da string
 		idSecao = idSecao.replace(/[^a-zA-Z 0-9]+/g,'');
-		itemS = '<div class="accordion-item"><h2 class="accordion-header" id = "tit' + idSecao + '"><button class="accordion-button collapsed bg text-light" type="button" data-bs-toggle="collapse" data-bs-target="#col' + idSecao + '" aria-expanded="false" aria-controls="col' + idSecao + '">'+ el + '</button></h2><div id="col' + idSecao + '" class="accordion-collapse collapse" aria-labelledby="tit' + idSecao + '" data-bs-parent="#divSecaoInd">';		
+		itemS = '<div class="accordion-item"><h2 class="accordion-header" id = "tit' + idSecao + i + '"><button class="accordion-button collapsed bg text-light" type="button" data-bs-toggle="collapse" data-bs-target="#col' + idSecao + i + '" aria-expanded="false" aria-controls="col' + idSecao + i + '">'+ el + '</button></h2><div id="col' + idSecao + i + '" class="accordion-collapse collapse" aria-labelledby="tit' + idSecao + i + '" data-bs-parent="#divSecaoInd">';		
 		arrColab.forEach(elC => { //carrega colaboradores da secao
 			if(sup){
 				login = jsonNomes.filter(function (elNL){if (elNL["NOME"] == elC){return elNL;}});
