@@ -66,8 +66,8 @@ function js_ApontarValidaHora(sup, usuLogin = "", origem = "", id = ""){
 				    message: "Informe a hora e os minutos!",
 				})
 			});
-		}else if(origem == ""){ //lançamento primeiro turno
-			if (inpDataInicio.value == '') {
+		}else if(origem == "" && inpDataInicio.value == ''){ //lançamento primeiro turno
+			if (sup == 1) {//supervisor precisa preencher a data devido ao dia limite dos demitidos
 				return $(document).ready(function(){
 					bootbox.alert({
 						buttons: {
@@ -81,8 +81,10 @@ function js_ApontarValidaHora(sup, usuLogin = "", origem = "", id = ""){
 						message: "Informe o dia do apontamento!",
 					})
 				});
+			}else if (sup == 0){//para o colaborador é setado apenas o dia de hoje
+				inpDataInicio.value = new Date().toLocaleDateString('en-GB');				
+				inpDataFim.value = inpDataInicio.value;
 			}
-			inpDataFim.value = inpDataInicio.value;
 		}
 		var jsonDtHrIni = new Date(inpDataInicio.value.split('/').reverse().join('/') + " " + inpHoraInicio.value);
 		jsonDtHrIni.setSeconds(02); //resolve diferença de minutos entre apontamentos
@@ -462,7 +464,7 @@ function js_addEventosIniciais() {
 			var usu = jsonSecaoNomeSup.find(element => element['NOME'] == document.getElementById("selNome").value)
 			if (usu != undefined && usu['STATUS'] == 'D') {//define data máxima no calendario para colab demitido
 				$("#inpDataInicio").val('');
-				$('#inpDataInicio').datepicker('setEndDate', new Date(usu['DT_DEMISSAO'].date)).datepicker('update')
+				$('#inpDataInicio').datepicker('setEndDate', new Date(usu['DT_DEMISSAO'].date)).datepicker('update');
 			}else{
 				$("#inpDataInicio").datepicker('setEndDate', new Date()).datepicker('update');
 			}
@@ -496,14 +498,19 @@ function js_validaEnvioApont(evento, sup, usuLogado){
 
 	try {		
 		if (sup == "0"){//valida regras de campos para o colaborador
-			if (varSelNome.value !== usuLogado || varInpChapa.value == "") { //usuario do apontamento precisa se o mesmo do usuario logado
+			if (varSelNome.value !== usuLogado || varInpChapa.value == "") { //usuario do apontamento precisa ser o mesmo do usuario logado
 				throw "Usuário inválido, atualize a página";
 			}
-		}
-
-			if (varInpDataInicio.value = '') {//as datas precisam ser iguais --VALIDAR HOJE
+			
+			if (varInpDataInicio.value == '') {//preenche com a data max do calendário
+				varInpDataInicio.value = new Date($("#inpDataInicio").datepicker("getEndDate")).toLocaleDateString('en-GB');
+				varInpDataFim.value = varInpDataInicio.value;
+			}
+		}else{
+			if (varInpDataInicio.value == '') {//a data não poderá ficar em branco
 				throw "Preencha a data do apontamento.";
 			}
+		}		
 
 			if (varInpDataInicio.value !== varInpDataFim.value) {//as datas precisam ser iguais --VALIDAR HOJE
 				varInpDataFim.value = varInpDataInicio.value;
