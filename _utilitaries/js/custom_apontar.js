@@ -68,7 +68,19 @@ function js_ApontarValidaHora(sup, usuLogin = "", origem = "", id = ""){
 			});
 		}else if(origem == ""){ //lançamento primeiro turno
 			if (inpDataInicio.value == '') {
-				inpDataInicio.value = new Date().toLocaleDateString('en-GB');
+				return $(document).ready(function(){
+					bootbox.alert({
+						buttons: {
+							ok: {
+								label: 'OK',
+								className: 'bg text-light'
+							},
+						},
+						centerVertical: true,
+						title: "Apontamento Inválido",
+						message: "Informe o dia do apontamento!",
+					})
+				});
 			}
 			inpDataFim.value = inpDataInicio.value;
 		}
@@ -488,6 +500,11 @@ function js_validaEnvioApont(evento, sup, usuLogado){
 				throw "Usuário inválido, atualize a página";
 			}
 		}
+
+			if (varInpDataInicio.value = '') {//as datas precisam ser iguais --VALIDAR HOJE
+				throw "Preencha a data do apontamento.";
+			}
+
 			if (varInpDataInicio.value !== varInpDataFim.value) {//as datas precisam ser iguais --VALIDAR HOJE
 				varInpDataFim.value = varInpDataInicio.value;
 			}

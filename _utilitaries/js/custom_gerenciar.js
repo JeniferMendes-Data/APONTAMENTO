@@ -108,7 +108,8 @@ function js_recuperaNomeIDSup(id_sup) {
 				$("#" + id_sup.id).empty()
 				$("#" + id_sup.id).append("<option value='TODOS'>TODOS</option>");
 				for (var i = 0; i < jsonNomes.length; i++) { //alimenta o campo do select de seção na tela
-					$("#" + id_sup.id).append("<option value='" + jsonNomes[i]['LOGIN'] + "'>" + jsonNomes[i]['NOME'] + "</option>");					
+					var demitido = jsonNomes[i]['STATUS'] == 'D'?"class='text-danger'":"";				
+					$("#" + id_sup.id).append("<option " + demitido + " value='" + jsonNomes[i]['LOGIN'] + "'>" + jsonNomes[i]['NOME'] + "</option>");					
 				}
 				global_ordenaOption(id_sup.id);
 				$("#" + id_sup.id).selectpicker('refresh');
